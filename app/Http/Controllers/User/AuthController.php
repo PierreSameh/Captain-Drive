@@ -25,13 +25,14 @@ class AuthController extends Controller
     public function register(Request $request) {
         try {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|numeric|digits:11|unique:users,phone',
-            'gender'=> 'required|string|max:10',
-            'password' => 'required|string|min:8|
-            regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u
-            |confirmed',
+            'name' => ['required','string','max:255'],
+            'email' => ['required','email','unique:users,email'],
+            'phone' => ['required','string','numeric','digits:11','unique:users,phone'],
+            'gender'=> ['required','string','max:10'],
+            'password' => ['required_if:joined_with,1', // Required only if joined_with is 1
+            'string','min:8',
+            'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u',
+            'confirmed'],
         ], [
             "password.regex" => "Password must have Captial and small letters, and a special character",
         ]);
@@ -53,6 +54,7 @@ class AuthController extends Controller
             'email' => $request->email,
             'phone'=> $request->phone,
             'gender'=> $request->gender,
+            'joined_with'=> $request->joined_with,
             'address'=> $request->address,
             'password' => Hash::make($request->password),
         ]);
@@ -85,7 +87,12 @@ class AuthController extends Controller
                 "Error Signing UP",
                 [$e->getMessage()],
                 [],
-                []
+                ["joined_with" => [
+                    '1 -> Sign Up with email',
+                    '2 -> Sign Up with Google',
+                    '3 -> Sign Up with Facebook'
+                    ]
+                    ]
             );
         }
 
