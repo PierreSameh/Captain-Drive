@@ -8,6 +8,8 @@ use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
 
 
+//////////////////////////// YOU HAVE TO PUT YOUR EMAIL INFORMATIONS HERE AND CHANGE THE NAME TO ////////////////////////
+////////////////////////////////////////////////////  SendMailTrait.php /////////////////////////////////////////////////
 trait SendMailTrait
 {
 
@@ -29,7 +31,7 @@ trait SendMailTrait
             //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
-            $mail->setFrom('captainpirzon@gmail.com', 'Pet-App'); // Enter Your Email
+            $mail->setFrom('', 'Pet-App'); // Enter Your Email
             $mail->addAddress($receiver_mail); //Add a recipient
             $mail->CharSet = 'UTF-8';
 
