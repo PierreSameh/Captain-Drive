@@ -56,7 +56,7 @@ class AuthController extends Controller
             'gender'=> $request->gender,
             'joined_with'=> $request->joined_with,
             'address'=> $request->address,
-            'password' => Hash::make($request->password),
+            'password' => (int) $request->joined_with === 1 ? Hash::make($request->password) : ((int) $request->joined_with === 2 ? Hash::make("Google") : Hash::make("Facebook")),
         ]);
 
 

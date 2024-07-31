@@ -18,7 +18,8 @@ return new class extends Migration
             $table->string('phone');
             $table->string('gender');
             $table->string('picture')->nullable();
-            $table->integer('joined_with');
+            $table->integer('social_id')->nullable();
+            $table->string('social_type')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
