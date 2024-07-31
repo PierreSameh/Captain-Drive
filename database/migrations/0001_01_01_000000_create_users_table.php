@@ -20,7 +20,10 @@ return new class extends Migration
             $table->string('picture')->nullable();
             $table->integer('social_id')->nullable();
             $table->string('social_type')->nullable();
+            $table->boolean('is_email_verified')->default(false);
             $table->timestamp('email_verified_at')->nullable();
+            $table->string('email_last_verfication_code')->nullable();
+            $table->dateTime('email_last_verfication_code_expird_at')->nullable();
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
