@@ -9,6 +9,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use App\HandleTrait;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+
 
 class SocialiteController extends Controller
 {
@@ -37,13 +40,19 @@ class SocialiteController extends Controller
                     []
                 ); 
             } else {
+                $validator = Validator::make($request->all(), [
+                    'phone'=> ['required','string','numeric','digits:11','unique:users,phone'],
+                ]);
                 $newUser = User::create([
                     'name'=> $user->name,
                     'email'=> $user->email,
+                    'phone' => $request->phone,
+                    'gender'=> $user->gender,
                     'social_id'=> $user->id,
                     'social_type'=> 'google',
                     'password'=> Hash::make('my-google'),
                 ]);
+
 
                 Auth::login($newUser);
                 $token = $newUser->createToken('token')->plainTextToken;
@@ -86,9 +95,14 @@ class SocialiteController extends Controller
                     []
                 ); 
             } else {
+                $validator = Validator::make($request->all(), [
+                    'phone'=> ['required','string','numeric','digits:11','unique:users,phone'],
+                ]);
                 $newUser = User::create([
                     'name'=> $user->name,
                     'email'=> $user->email,
+                    'phone' => $request->phone,
+                    'gender'=> $user->gender,
                     'social_id'=> $user->id,
                     'social_type'=> 'facebook',
                     'password'=> Hash::make('my-facebook'),
