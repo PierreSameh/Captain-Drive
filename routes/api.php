@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\SocialiteController;
-use Laravel\Socialite\Facades\Socialite;
  
 
 
@@ -13,6 +12,8 @@ use Laravel\Socialite\Facades\Socialite;
 Route::post('/user/register', [AuthController::class, 'register']);
 Route::post('/user/forgot-password', [AuthController::class, "forgetPassword"]);
 Route::post('/user/forgot-password-change', [AuthController::class, "forgetPasswordCheckCode"]);
+Route::post('/user/login', [AuthController::class, 'login']);
+Route::get('/user/logout', [AuthController::class, "logout"])->middleware('auth:sanctum');
 
 //Socialite
 Route::get('/auth/google', [SocialiteController::class,'redirectToGoogle']);

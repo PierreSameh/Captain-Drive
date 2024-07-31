@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -230,5 +231,59 @@ class AuthController extends Controller
                     }
                 }
             }
+    }
+
+    public function login(Request $request) {
+        $credentials = $request->only('email', 'password');
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $userManual = Auth::user();
+            $token = $userManual->createToken('token')->plainTextToken;
+
+
+        }else  {
+                return $this->handleResponse(
+                false,
+                "Error Signing UP",
+                ['Invalid Credentials'],
+                [],
+                []
+            );
         }
+
+
+        // return response()->json(compact('token'));
+        return $this->handleResponse(
+            true,
+            "You are Loged In",
+            [],
+            [
+                $token,
+            ],
+            []
+        );
+    }
+
+    public function logout(Request $request) {
+        $user = $request->user();
+
+
+        if ($user) {
+            if ($user->tokens())
+                $user->tokens()->delete();
+        }
+
+
+        return $this->handleResponse(
+            true,
+            "Loged Out",
+            [],
+            [
+            ],
+            [
+                "On logout" => "كل التوكينز بتتمسح انت كمان امسحها من الكاش عندك"
+            ]
+        );
+    }
+
+
 }
