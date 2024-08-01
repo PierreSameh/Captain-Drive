@@ -24,4 +24,8 @@ Route::get('/auth/facebook/callback', [SocialiteController::class,'handleFaceboo
 
 //AddressController
 Route::post('/address/add-address', [AddressController::class,'addAddress'])->middleware('auth:sanctum');
+Route::post('/address/{address}/update-address', [AddressController::class,'updateAddress'])->middleware('auth:sanctum');
+Route::get('/address/all-addresses', [AddressController::class,'getAllAddresses'])->middleware('auth:sanctum');
+Route::get('/address/user-addresses', [AddressController::class,'getUserAddresses'])->middleware('auth:sanctum');
+Route::get('/address/{address}', [AddressController::class,'getAddress'])->middleware('auth:sanctum');
 
