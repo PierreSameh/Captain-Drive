@@ -15,6 +15,9 @@ Route::post('/user/forgot-password', [AuthController::class, "forgetPassword"]);
 Route::post('/user/forgot-password-change', [AuthController::class, "forgetPasswordCheckCode"]);
 Route::post('/user/login', [AuthController::class, 'login']);
 Route::get('/user/logout', [AuthController::class, "logout"])->middleware('auth:sanctum');
+Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"])->middleware('auth:sanctum');
+Route::post('/user/verify-email', [AuthController::class, "verifyEmail"])->middleware('auth:sanctum');
+
 
 //Socialite
 Route::get('/auth/google', [SocialiteController::class,'redirectToGoogle']);
