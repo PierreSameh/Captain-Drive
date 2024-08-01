@@ -201,6 +201,54 @@ class AuthController extends Controller
         }
     }
 
+    public function changePassword(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "old_password" => 'required',
+            'password' => 'required|string|min:12|
+            regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u
+            |confirmed',
+            ], [
+            "password.regex" => "Password must have Captial and small letters, and a special character",
+            ]);
+
+        if ($validator->fails()) {
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+
+        $user = $request->user();
+        $old_password = $request->old_password;
+
+        if ($user) {
+            if (!Hash::check($old_password, $user->password)) {
+                return $this->handleResponse(
+                    false,
+                    "",
+                    ["Current Password is Incorrect"],
+                    [],
+                    []
+                );
+            }
+
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+            return $this->handleResponse(
+                true,
+                "Password Changed Successfully",
+                [],
+                [],
+                []
+            );
+        }
+    }
+
+
     public function forgetPassword(Request $request) {
         $validator = Validator::make($request->all(), [
             "email" => 'required|email',
