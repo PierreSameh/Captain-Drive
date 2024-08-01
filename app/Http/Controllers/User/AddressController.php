@@ -163,4 +163,28 @@ class AddressController extends Controller
                 []
             );
     }
+
+    public function deleteAddress($addressID) {
+    
+        $address = Address::where('id', $addressID);
+        if (isset($address)) {
+        $address->delete();
+
+        return $this->handleResponse(
+            true,
+            "Address Deleted Successfully",
+            [],
+            [],
+            []
+        );
+        } else {
+            return $this->handleResponse(
+                false,
+                "Couldn't Delete Your Pet",
+                [],
+                [],
+                []
+            );
+        }
+    }
 }

@@ -28,4 +28,5 @@ Route::post('/address/{address}/update-address', [AddressController::class,'upda
 Route::get('/address/all-addresses', [AddressController::class,'getAllAddresses'])->middleware('auth:sanctum');
 Route::get('/address/user-addresses', [AddressController::class,'getUserAddresses'])->middleware('auth:sanctum');
 Route::get('/address/{address}', [AddressController::class,'getAddress'])->middleware('auth:sanctum');
+Route::post('/address/{address}/delete-address', [AddressController::class,'deleteAddress'])->middleware('auth:sanctum');
 
