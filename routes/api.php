@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\SocialiteController;
 use App\Http\Controllers\User\AddressController;
+use App\Http\Controllers\User\DriverController;
  
 
 
@@ -36,3 +37,5 @@ Route::get('/address/user-addresses', [AddressController::class,'getUserAddresse
 Route::get('/address/{address}', [AddressController::class,'getAddress'])->middleware('auth:sanctum');
 Route::post('/address/{address}/delete-address', [AddressController::class,'deleteAddress'])->middleware('auth:sanctum');
 
+//DriverController
+Route::post('/driver/register', [DriverController::class,'register']);

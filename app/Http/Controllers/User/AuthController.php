@@ -30,8 +30,7 @@ class AuthController extends Controller
             'email' => ['required','email','unique:users,email'],
             'phone' => ['required','string','numeric','digits:11','unique:users,phone'],
             'gender'=> ['required','string','max:10'],
-            'password' => ['required_if:joined_with,1', // Required only if joined_with is 1
-            'string','min:8',
+            'password' => ['required','string','min:8',
             'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u',
             'confirmed'],
         ], [
