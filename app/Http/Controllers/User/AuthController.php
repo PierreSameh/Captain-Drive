@@ -434,5 +434,77 @@ class AuthController extends Controller
         );
     }
 
+    public function getUser(Request $request) {
+        $user = $request->user();
+        if ($user) {
+        return $this->handleResponse(
+            true,
+            "User Data",
+            [],
+            [$user],
+            []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "User Not Found!",
+            [],
+            [],
+            []
+        );
+     }
+
+     public function editProfile(Request $request) {
+        try {
+        $validator = Validator::make($request->all(), [
+            'name' => ['required','string','max:255'],
+            'email' => ['required','email','unique:users,email'],
+            'phone' => ['required','string','numeric','digits:11','unique:users,phone'],
+            'picture'=> ['nullable','image','mimes:jpeg,png,jpg,gif','max:2048']
+        ]);
+
+
+        if ($validator->fails()) {
+            return $this->handleResponse(
+            false,
+            "Error Signing UP",
+            [$validator->errors()],
+            [],
+            []
+            );
+        }
+        $user = $request->user();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+
+        if ($request->picture) {
+            $imagePath = $request->file('picture')->store('/storage/profile', 'public');
+            $user->picture = $imagePath;
+        }
+
+        $user->save();
+        
+        return $this->handleResponse(
+            true,
+            "Info Updated Successfully",
+            [],
+            [
+                $user,
+            ],
+            []
+        );
+        } catch (\Exception $e) {
+            return $this->handleResponse(
+                false,
+                "Coudln't Edit Your Info",
+                [$e->getMessage()],
+                [],
+                []
+            );
+        }
+        
+    }
+
 
 }

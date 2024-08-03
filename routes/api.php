@@ -18,7 +18,8 @@ Route::get('/user/logout', [AuthController::class, "logout"])->middleware('auth:
 Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"])->middleware('auth:sanctum');
 Route::post('/user/verify-email', [AuthController::class, "verifyEmail"])->middleware('auth:sanctum');
 Route::post('/user/change-password', [AuthController::class, "changePassword"])->middleware('auth:sanctum');
-
+Route::get('/user', [AuthController::class,'getUser'])->middleware('auth:sanctum');
+Route::post('/user/edit', [AuthController::class,"editProfile"])->middleware('auth:sanctum');
 
 
 //Socialite
