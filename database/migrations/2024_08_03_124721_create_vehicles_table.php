@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('plates_number');
             $table->timestamps();
 
-            $table->foreign('driver_id')->references('id')->on('drivers');
+            $table->foreign('driver_id')->references('id')->on('drivers')->onDelete('cascade');
         });
     }
 

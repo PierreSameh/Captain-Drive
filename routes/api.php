@@ -39,3 +39,4 @@ Route::post('/address/{address}/delete-address', [AddressController::class,'dele
 
 //DriverController
 Route::post('/driver/register', [DriverController::class,'register']);
+Route::post('/driver/login', [DriverController::class, 'login']);

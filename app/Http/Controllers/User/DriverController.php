@@ -30,7 +30,7 @@ class DriverController extends Controller
         try {
         $validator = Validator::make($request->all(), [
             'name' => ['required','string','max:255'],
-            'email' => ['required','email','unique:users,email'],
+            'email' => ['required','email','unique:drivers,email'],
             'phone' => ['required','string','numeric','digits:11','unique:drivers,phone',
             'unique:drivers,add_phone'],
             'add_phone' => ['required','string','numeric','digits:11','unique:drivers,add_phone'],
@@ -192,7 +192,34 @@ class DriverController extends Controller
                     ]
             );
         }
-
-
     } 
+
+    public function login(Request $request) {
+        $credentials = $request->only('email', 'password');
+        if (Auth::guard('driver')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            $userManual = Driver::where('email', $request->email)->first();
+            $token = $userManual->createToken('token')->plainTextToken;
+
+
+        }else  {
+                return $this->handleResponse(
+                false,
+                "Error Signing UP",
+                ['Invalid Credentials'],
+                [],
+                []
+            );
+        }
+        
+        return $this->handleResponse(
+            true,
+            "You are Loged In",
+            [],
+            [
+                $token,
+            ],
+            []
+        );
+    }
+
 }
