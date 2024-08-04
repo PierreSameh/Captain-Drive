@@ -194,6 +194,47 @@ class DriverController extends Controller
         }
     } 
 
+    public function askEmailCode(Request $request) {
+        $driver = $request->driver();
+        if ($driver) {
+            $code = rand(100000, 999999);
+
+            $driver->email_last_verfication_code = Hash::make($code);
+            $driver->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
+            $driver->save();
+
+            $msg_title = "Here's your Authentication Code";
+            $msg_content = "<h1>";
+            $msg_content .= "Your Authentication code is<span style='color: blue'>" . $code . "</span>";
+            $msg_content .= "</h1>";
+
+            $this->sendEmail($driver->email, $msg_title, $msg_content);
+
+            return $this->handleResponse(
+                true,
+                "Authentication Code Sent To Your Email Successfully! ",
+                [],
+                [],
+                [
+                    "code get expired after 10 minuts",
+                    "the same endpoint you can use for ask resend email"
+                ]
+            );
+        }
+
+        return $this->handleResponse(
+            false,
+            "",
+            ["invalid process"],
+            [],
+            [
+                "code get expired after 10 minuts",
+                "the same endpoint you can use for ask resend email"
+            ]
+        );
+    }
+
+
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');
         if (Auth::guard('driver')->attempt(['email' => $request->email, 'password' => $request->password])) {

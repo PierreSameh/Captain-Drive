@@ -39,4 +39,5 @@ Route::post('/address/{address}/delete-address', [AddressController::class,'dele
 
 //DriverController
 Route::post('/driver/register', [DriverController::class,'register']);
+Route::get('/driver/ask-email-verfication-code', [DriverController::class, "askEmailCode"])->middleware('auth:sanctum,driver');
 Route::post('/driver/login', [DriverController::class, 'login']);
