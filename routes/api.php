@@ -44,4 +44,5 @@ Route::post('/driver/verify-email', [DriverController::class, "verifyEmail"])->m
 Route::post('/driver/change-password', [DriverController::class, "changePassword"])->middleware('auth:sanctum,driver');
 Route::post('/driver/forgot-password', [DriverController::class, "forgetPassword"]);
 Route::post('/driver/forgot-password-change', [DriverController::class, "forgetPasswordCheckCode"]);
+Route::get('/driver', [DriverController::class,'getUser'])->middleware('auth:sanctum,driver');
 Route::post('/driver/login', [DriverController::class, 'login']);
