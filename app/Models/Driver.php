@@ -23,6 +23,11 @@ class Driver extends Authenticatable
         "picture",
         "status",
         "gender",
+        "social_id",
+        "social_type",
+        "email_last_verfication_code",
+        "email_last_verfication_code_expird_at",
+        "remember_token",
     ];
 
     public function driverdocs() {
