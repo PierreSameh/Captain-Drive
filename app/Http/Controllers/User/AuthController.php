@@ -307,6 +307,7 @@ class AuthController extends Controller
     public function forgetPasswordCheckCode(Request $request) {
         $validator = Validator::make($request->all(), [
             "code" => ["required"],
+            "email" => ["required", "email"],
         ]);
 
         if ($validator->fails()) {

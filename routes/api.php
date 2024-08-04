@@ -41,4 +41,7 @@ Route::post('/address/{address}/delete-address', [AddressController::class,'dele
 Route::post('/driver/register', [DriverController::class,'register']);
 Route::get('/driver/ask-email-verfication-code', [DriverController::class, "askEmailCode"])->middleware('auth:sanctum,driver');
 Route::post('/driver/verify-email', [DriverController::class, "verifyEmail"])->middleware('auth:sanctum,driver');
+Route::post('/driver/change-password', [DriverController::class, "changePassword"])->middleware('auth:sanctum,driver');
+Route::post('/driver/forgot-password', [DriverController::class, "forgetPassword"]);
+Route::post('/driver/forgot-password-change', [DriverController::class, "forgetPasswordCheckCode"]);
 Route::post('/driver/login', [DriverController::class, 'login']);
