@@ -195,7 +195,7 @@ class DriverController extends Controller
     } 
 
     public function askEmailCode(Request $request) {
-        $driver = $request->driver();
+        $driver = $request->user();
         if ($driver) {
             $code = rand(100000, 999999);
 
