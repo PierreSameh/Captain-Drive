@@ -234,6 +234,63 @@ class DriverController extends Controller
         );
     }
 
+    public function verifyEmail(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "code" => ["required"],
+        ], [
+            "code.required" => "Enter Authentication Code",
+        ]);
+
+        if ($validator->fails()) {
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+
+        $user = $request->user();
+        $code = $request->code;
+
+        if ($user) {
+            if (!Hash::check($code, $user->email_last_verfication_code ? $user->email_last_verfication_code : Hash::make(0000))) {
+                return $this->handleResponse(
+                    false,
+                    "",
+                    ["Incorrect Code"],
+                    [],
+                    []
+                );
+            } else {
+                $timezone = 'Europe/Istanbul'; // Replace with your specific timezone if different
+                $verificationTime = new Carbon($user->email_last_verfication_code_expird_at, $timezone);
+                if ($verificationTime->isPast()) {
+                    return $this->handleResponse(
+                        false,
+                        "",
+                        ["Code is Expired"],
+                        [],
+                        []
+                    );
+                } else {
+                    $user->is_email_verified = true;
+                    $user->save();
+
+                    if ($user) {
+                        return $this->handleResponse(
+                            true,
+                            "Your Email is Verifyied",
+                            [],
+                            [],
+                            []
+                        );
+                    }
+                }
+            }
+        }
+    }
 
     public function login(Request $request) {
         $credentials = $request->only('email', 'password');

@@ -22,6 +22,11 @@ return new class extends Migration
             $table->string('picture');
             $table->string('status');
             $table->string('gender');
+            $table->boolean('is_email_verified')->default(false);
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('email_last_verfication_code')->nullable();
+            $table->dateTime('email_last_verfication_code_expird_at')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
     }
