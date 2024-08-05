@@ -27,10 +27,13 @@ class AuthController extends Controller
         try {
         $validator = Validator::make($request->all(), [
             'name' => ['required','string','max:255'],
-            'email' => ['required','email','unique:users,email'],
-            'phone' => ['required','string','numeric','digits:11','unique:users,phone'],
+            'email' => ['required_unless:joined_with,3','email','unique:users,email'],
+            'phone' => ['required_if:joined_with,1',
+            'string','numeric','digits:11','unique:users,phone'],
             // 'gender'=> ['required','string','max:10'],
-            'password' => ['required','string','min:8',
+            'joined_with'=> ['required', 'in:1,2,3'],
+            'password' => ['required_if:joined_with,1',
+            'string','min:8',
             'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u',
             'confirmed'],
         ], [
@@ -42,9 +45,15 @@ class AuthController extends Controller
                 return $this->handleResponse(
                 false,
                 "Error Signing UP",
-                [$validator->errors()],
+                [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "joined_with" => [
+                        "1"=> "Signed Up by email",
+                        "2"=> "With Google",
+                        "3"=> "With Facebook",
+                    ]
+                ]
             );
         }
 
@@ -53,6 +62,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'phone'=> $request->phone,
+            'joined_with'=> $request->joined_with,
             // 'gender'=> $request->gender,
             'address'=> $request->address,
             'password' => (int) $request->joined_with === 1 ? Hash::make($request->password) : ((int) $request->joined_with === 2 ? Hash::make("Google") : Hash::make("Facebook")),
@@ -70,8 +80,8 @@ class AuthController extends Controller
             "You are Signed Up",
             [],
             [
-                $user,
-                $token
+                "user" => $user,
+                "token" => $token
             ],
             []
         );
@@ -405,7 +415,7 @@ class AuthController extends Controller
             "You are Loged In",
             [],
             [
-                $token,
+               "token" => $token,
             ],
             []
         );
@@ -440,7 +450,7 @@ class AuthController extends Controller
             true,
             "User Data",
             [],
-            [$user],
+            ["user" => $user],
             []
             );
         }
@@ -489,7 +499,7 @@ class AuthController extends Controller
             "Info Updated Successfully",
             [],
             [
-                $user,
+               "user" => $user,
             ],
             []
         );

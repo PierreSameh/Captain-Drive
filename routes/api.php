@@ -38,14 +38,14 @@ Route::get('/address/{address}', [AddressController::class,'getAddress'])->middl
 Route::post('/address/{address}/delete-address', [AddressController::class,'deleteAddress'])->middleware('auth:sanctum');
 
 //DriverController
-Route::post('/driver/register', [DriverController::class,'register']);
-Route::get('/driver/ask-email-verfication-code', [DriverController::class, "askEmailCode"])->middleware('auth:sanctum,driver');
-Route::post('/driver/verify-email', [DriverController::class, "verifyEmail"])->middleware('auth:sanctum,driver');
-Route::post('/driver/change-password', [DriverController::class, "changePassword"])->middleware('auth:sanctum,driver');
-Route::post('/driver/forgot-password', [DriverController::class, "forgetPassword"]);
-Route::post('/driver/forgot-password-change', [DriverController::class, "forgetPasswordCheckCode"]);
-Route::get('/driver', [DriverController::class,'getUser'])->middleware('auth:sanctum,driver');
-Route::post('/driver/edit', [DriverController::class,"editProfile"])->middleware('auth:sanctum,driver');
-Route::post('/driver/login', [DriverController::class, 'login']);
-Route::get('/driver/logout', [DriverController::class, "logout"])->middleware('auth:sanctum,driver');
+Route::post('/driver/register', [DriverController::class,'registerDriver']);
+Route::get('/driver/ask-email-verfication-code', [DriverController::class, "askEmailCodeDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/verify-email', [DriverController::class, "verifyEmailDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/change-password', [DriverController::class, "changePasswordDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/forgot-password', [DriverController::class, "forgetPasswordDriver"]);
+Route::post('/driver/forgot-password-change', [DriverController::class, "forgetPasswordCheckCodeDriver"]);
+Route::get('/driver', [DriverController::class,'getUserDriver'])->middleware('auth:sanctum,driver');
+Route::post('/driver/edit', [DriverController::class,"editProfileDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/login', [DriverController::class, 'loginDriver']);
+Route::get('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
 

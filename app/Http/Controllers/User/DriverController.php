@@ -22,7 +22,7 @@ class DriverController extends Controller
 {
     use HandleTrait, SendMailTrait;
 
-    public function register(Request $request)
+    public function registerDriver(Request $request)
     {
         DB::beginTransaction();
 
@@ -194,7 +194,7 @@ class DriverController extends Controller
         }
     } 
 
-    public function askEmailCode(Request $request) {
+    public function askEmailCodeDriver(Request $request) {
         $driver = $request->user();
         if ($driver) {
             $code = rand(100000, 999999);
@@ -234,7 +234,7 @@ class DriverController extends Controller
         );
     }
 
-    public function verifyEmail(Request $request) {
+    public function verifyEmailDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "code" => ["required"],
         ], [
@@ -292,7 +292,7 @@ class DriverController extends Controller
         }
     }
 
-    public function changePassword(Request $request) {
+    public function changePasswordDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "old_password" => 'required',
             'password' => 'required|string|min:12|
@@ -340,7 +340,7 @@ class DriverController extends Controller
     }
 
 
-    public function forgetPassword(Request $request) {
+    public function forgetPasswordDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "email" => 'required|email',
         ]);
@@ -396,7 +396,7 @@ class DriverController extends Controller
             }
     }
 
-    public function forgetPasswordCheckCode(Request $request) {
+    public function forgetPasswordCheckCodeDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "code" => ["required"],
             "email" => ["required", "email"],
@@ -473,7 +473,7 @@ class DriverController extends Controller
             }
     }
 
-    public function login(Request $request) {
+    public function loginDriver(Request $request) {
         $credentials = $request->only('email', 'password');
         if (Auth::guard('driver')->attempt(['email' => $request->email, 'password' => $request->password])) {
             $userManual = Driver::where('email', $request->email)->first();
@@ -501,7 +501,7 @@ class DriverController extends Controller
         );
     }
 
-    public function logout(Request $request) {
+    public function logoutDriver(Request $request) {
         $user = $request->user();
 
 
@@ -523,7 +523,7 @@ class DriverController extends Controller
         );
     }
 
-    public function getUser(Request $request) {
+    public function getUserDriver(Request $request) {
         $user = $request->user();
         if ($user) {
         return $this->handleResponse(
@@ -543,7 +543,7 @@ class DriverController extends Controller
         );
      }
 
-     public function editProfile(Request $request) {
+     public function editProfileDriver(Request $request) {
         try {
         $validator = Validator::make($request->all(), [
             'name' => ['required','string','max:255'],
