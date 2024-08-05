@@ -158,9 +158,9 @@ class DriverController extends Controller
             "You are Signed Up",
             [],
             [
-                $driver,
-                $vehicle,
-                $token
+                "driver" => $driver,
+                "vehicle" => $vehicle,
+                "token" => $token
             ],
             [
                 "Vehicle Types" => [
@@ -495,7 +495,7 @@ class DriverController extends Controller
             "You are Loged In",
             [],
             [
-                $token,
+                "token" => $token,
             ],
             []
         );
@@ -530,7 +530,9 @@ class DriverController extends Controller
             true,
             "Driver Data",
             [],
-            [$user],
+            [
+                "user" => $user
+            ],
             []
             );
         }
@@ -579,7 +581,7 @@ class DriverController extends Controller
             "Info Updated Successfully",
             [],
             [
-                $user,
+                "user" => $user,
             ],
             []
         );
