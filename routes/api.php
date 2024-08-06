@@ -6,6 +6,7 @@ use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\SocialiteController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\DriverController;
+use App\Http\Controllers\User\WalletController;
  
 
 
@@ -49,3 +50,8 @@ Route::post('/driver/edit', [DriverController::class,"editProfileDriver"])->midd
 Route::post('/driver/login', [DriverController::class, 'loginDriver']);
 Route::get('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
 
+//WalletController
+Route::post('/driver/add-wallet', [WalletController::class,'addWallet'])->middleware('auth:sanctum,driver');
+Route::post('/driver/edit-wallet', [WalletController::class,'editWallet'])->middleware('auth:sanctum,driver');
+Route::get('/driver/get-wallet', [WalletController::class,'getWallet'])->middleware('auth:sanctum,driver');
+Route::post('/driver/delete-wallet', [WalletController::class,'deleteWallet'])->middleware('auth:sanctum,driver');
