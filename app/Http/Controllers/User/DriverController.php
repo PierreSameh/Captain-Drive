@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Driver;
 use App\Models\DriverDoc;
 use App\Models\Vehicle;
+use App\Models\Wallet;
 use Illuminate\Support\Str;
 
 
@@ -157,6 +158,11 @@ class DriverController extends Controller
 
         DB::commit();
 
+        Wallet::create([
+            'driver_id'=> $driver->id,
+            'balance'=> 0,
+        ]);
+
 
         // return response()->json(compact(['user', 'pet'], 'token'), 201);
 
@@ -177,7 +183,8 @@ class DriverController extends Controller
                     '3 -> Motorcycle',
                     '4 -> Taxi',
                     '5 -> Bus'
-                    ]
+                ],
+                "Driver Registration Creates a New Driver Wallet"
             ]
         );
 
