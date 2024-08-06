@@ -23,8 +23,8 @@ class Driver extends Authenticatable
         "picture",
         "status",
         "gender",
-        "social_id",
-        "social_type",
+        "super_key",
+        "unique_id",
         "email_last_verfication_code",
         "email_last_verfication_code_expird_at",
         "remember_token",
@@ -33,8 +33,16 @@ class Driver extends Authenticatable
     public function driverdocs() {
         return $this->hasOne(DriverDoc::class,"id","driver_id");
     }
-    public function cars() {
+    public function vehicle() {
         return $this->hasOne(Vehicle::class,"id","driver_id");
+    }
+
+    public function wallet() {
+        return $this->hasOne(Wallet::class);
+    }
+
+    public function transaction() {
+        return $this->hasMany(Transaction::class);
     }
 
     public function getJWTIdentifier()

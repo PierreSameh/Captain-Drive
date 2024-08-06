@@ -13,11 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
-
-
-
-
-
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -57,12 +53,16 @@ class AuthController extends Controller
             );
         }
 
+        $superKey = "P";
+        $uniqueID = $this->generateUniqueNumericId(10);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'phone'=> $request->phone,
             'joined_with'=> $request->joined_with,
+            'super_key'=> $superKey,
+            'unique_id'=> $uniqueID,
             // 'gender'=> $request->gender,
             'address'=> $request->address,
             'password' => (int) $request->joined_with === 1 ? Hash::make($request->password) : ((int) $request->joined_with === 2 ? Hash::make("Google") : Hash::make("Facebook")),
@@ -107,6 +107,16 @@ class AuthController extends Controller
 
 
     } 
+    private function generateUniqueNumericId($length)
+    {
+        $min = pow(10, $length - 1);
+        $max = pow(10, $length) - 1;
+        return mt_rand($min, $max);
+    }
+    // private function generateUniqueId($length)
+    // {
+    //     return Str::random($length);
+    // }
 
     public function askEmailCode(Request $request) {
         $user = $request->user();

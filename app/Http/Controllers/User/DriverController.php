@@ -16,16 +16,17 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Driver;
 use App\Models\DriverDoc;
 use App\Models\Vehicle;
+use Illuminate\Support\Str;
 
 
 class DriverController extends Controller
 {
     use HandleTrait, SendMailTrait;
 
+
     public function registerDriver(Request $request)
     {
         DB::beginTransaction();
-
 
         try {
         $validator = Validator::make($request->all(), [
@@ -56,7 +57,11 @@ class DriverController extends Controller
             );
         }
 
+
+
         $picture = $request->file('picture')->store('/storage/docs', 'public');
+        $superKey = 'D';
+        $uniqueID = $this->generateUniqueNumericId(10);
 
         $driver = Driver::create([
             "name"=> $request->name,
@@ -66,6 +71,8 @@ class DriverController extends Controller
             'national_id'=> $request->national_id,
             'status'=> $request->status,
             'gender'=> $request->gender,
+            'super_key'=> $superKey,
+            'unique_id'=> $uniqueID,
             'picture'=> $picture,
             'password' => Hash::make($request->password),
         ]);
@@ -129,6 +136,7 @@ class DriverController extends Controller
                         '2 -> conditioned car',
                         '3 -> Motorcycle',
                         '4 -> Taxi',
+                        '5 -> Bus'
                         ]
                 ]
             );
@@ -168,6 +176,7 @@ class DriverController extends Controller
                     '2 -> conditioned car',
                     '3 -> Motorcycle',
                     '4 -> Taxi',
+                    '5 -> Bus'
                     ]
             ]
         );
@@ -193,6 +202,16 @@ class DriverController extends Controller
             );
         }
     } 
+    private function generateUniqueNumericId($length)
+    {
+        $min = pow(10, $length - 1);
+        $max = pow(10, $length) - 1;
+        return mt_rand($min, $max);
+    }
+    // private function generateUniqueId($length)
+    // {
+    //     return Str::random($length);
+    // }
 
     public function askEmailCodeDriver(Request $request) {
         $driver = $request->user();

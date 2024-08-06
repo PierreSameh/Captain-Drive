@@ -24,6 +24,8 @@ class User extends Authenticatable
         'phone',
         'picture',
         'joined_with',
+        'super_key',
+        'unique_id',
         'gender',
         'password',
     ];
@@ -31,6 +33,12 @@ class User extends Authenticatable
     public function address() {
         return $this->hasMany(Address::class);
     }
+
+    public function wallet() {
+        return $this->hasOne(Wallet::class);
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
