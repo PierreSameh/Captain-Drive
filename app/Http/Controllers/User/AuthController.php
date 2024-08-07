@@ -40,7 +40,7 @@ class AuthController extends Controller
         if ($validator->fails()) {
                 return $this->handleResponse(
                 false,
-                "Error Signing UP",
+                "",
                 [$validator->errors()->first()],
                 [],
                 [
@@ -489,8 +489,8 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return $this->handleResponse(
             false,
-            "Error Signing UP",
-            [$validator->errors()],
+            "",
+            [$validator->errors()->first()],
             [],
             []
             );

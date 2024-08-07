@@ -29,7 +29,7 @@ class AddressController extends Controller
             return $this->handleResponse(
                 false,
                 "",
-                [$validator->errors()],
+                [$validator->errors()->first()],
                 [],
                 []
             );
@@ -71,7 +71,7 @@ class AddressController extends Controller
             return $this->handleResponse(
                 false,
                 "",
-                [$validator->errors()],
+                [$validator->errors()->first()],
                 [],
                 []
             );

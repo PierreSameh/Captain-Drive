@@ -51,8 +51,8 @@ class DriverController extends Controller
         if ($validator->fails()) {
                 return $this->handleResponse(
                 false,
-                "Error Signing UP",
-                [$validator->errors()],
+                "",
+                [$validator->errors()->first()],
                 [],
                 []
             );
@@ -96,8 +96,8 @@ class DriverController extends Controller
         if ($docsValidator->fails()) {
             return $this->handleResponse(
                 false,
-                "Error Getting Your Pet Informations",
-                [$docsValidator->errors()],
+                "",
+                [$docsValidator->errors()->first()],
                 [],
                 []
             );
@@ -132,8 +132,8 @@ class DriverController extends Controller
         if ($vehicleValidator->fails()) {
             return $this->handleResponse(
                 false,
-                "Error Getting Your Pet Informations",
-                [$vehicleValidator->errors()],
+                "",
+                [$vehicleValidator->errors()->first()],
                 [],
                 [
                     "Vehicle Types" => [
@@ -584,8 +584,8 @@ class DriverController extends Controller
         if ($validator->fails()) {
             return $this->handleResponse(
             false,
-            "Error Signing UP",
-            [$validator->errors()],
+            "",
+            [$validator->errors()->first()],
             [],
             []
             );
