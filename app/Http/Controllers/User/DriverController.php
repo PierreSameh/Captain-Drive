@@ -63,6 +63,10 @@ class DriverController extends Controller
         $picture = $request->file('picture')->store('/storage/docs', 'public');
         $superKey = 'D';
         $uniqueID = $this->generateUniqueNumericId(10);
+        $exists = Driver::where('unique_id', $uniqueID)->first();
+        while (isset($exists)) {
+            $uniqueID = $this->generateUniqueNumericId(10);
+        }
 
         $driver = Driver::create([
             "name"=> $request->name,
@@ -152,19 +156,15 @@ class DriverController extends Controller
         $vehicle->save();
 
 
-
-        $token = $driver->createToken('token')->plainTextToken;
-
-
-        DB::commit();
-
         Wallet::create([
             'driver_id'=> $driver->id,
             'balance'=> 0,
         ]);
 
+        $token = $driver->createToken('token')->plainTextToken;
 
-        // return response()->json(compact(['user', 'pet'], 'token'), 201);
+
+        DB::commit();
 
 
         return $this->handleResponse(

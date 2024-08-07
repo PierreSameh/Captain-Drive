@@ -26,7 +26,7 @@ class AuthController extends Controller
             'email' => ['required_unless:joined_with,3','email','unique:users,email'],
             'phone' => ['required_if:joined_with,1',
             'string','numeric','digits:11','unique:users,phone'],
-            // 'gender'=> ['required','string','max:10'],
+            'gender'=> ['required','string','max:10'],
             'joined_with'=> ['required', 'in:1,2,3'],
             'password' => ['required_if:joined_with,1',
             'string','min:8',
@@ -55,7 +55,10 @@ class AuthController extends Controller
 
         $superKey = "P";
         $uniqueID = $this->generateUniqueNumericId(10);
-
+        $exists = User::where('unique_id', $uniqueID)->first();
+        while (isset($exists)) {
+            $uniqueID = $this->generateUniqueNumericId(10);
+        }
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -63,7 +66,7 @@ class AuthController extends Controller
             'joined_with'=> $request->joined_with,
             'super_key'=> $superKey,
             'unique_id'=> $uniqueID,
-            // 'gender'=> $request->gender,
+            'gender'=> $request->gender,
             'address'=> $request->address,
             'password' => (int) $request->joined_with === 1 ? Hash::make($request->password) : ((int) $request->joined_with === 2 ? Hash::make("Google") : Hash::make("Facebook")),
         ]);
