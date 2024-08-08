@@ -7,6 +7,7 @@ use App\Http\Controllers\User\SocialiteController;
 use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\DriverController;
 use App\Http\Controllers\User\WalletController;
+use App\Http\Controllers\User\RideController;
  
 
 
@@ -55,3 +56,6 @@ Route::post('/driver/add-wallet', [WalletController::class,'addWallet'])->middle
 Route::post('/driver/edit-wallet', [WalletController::class,'editWallet'])->middleware('auth:sanctum,driver');
 Route::get('/driver/get-wallet', [WalletController::class,'getWallet'])->middleware('auth:sanctum,driver');
 Route::post('/driver/delete-wallet', [WalletController::class,'deleteWallet'])->middleware('auth:sanctum,driver');
+
+//RideController
+Route::post('/ride/request-ride', [RideController::class,'sendRideRequest'])->middleware('auth:sanctum');

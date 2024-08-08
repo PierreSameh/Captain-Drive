@@ -38,7 +38,9 @@ class User extends Authenticatable
         return $this->hasOne(Wallet::class);
     }
 
-
+    public function riderequest() {
+        return $this->hasMany(RideRequest::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
