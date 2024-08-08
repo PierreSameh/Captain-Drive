@@ -47,4 +47,48 @@ class RideController extends Controller
             []
         );
     }
+
+    public function getForUserRideRequest(Request $request) {
+        $user = $request->user();
+        $ride = RideRequest::where("user_id", $user->id)->first();
+        if ($ride){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "reqeust"=> $ride
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "No Ride Reqeusts Found",
+            [],
+            [],
+            []
+            );
+    }
+
+    public function cancelRideRequest(Request $request, $rideID) {
+        $ride = RideRequest::findOrFail($rideID);
+        if (isset($ride)) {
+            $ride->delete();
+            return $this->handleResponse(
+                true,
+                "Ride Cancelled",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Can't Find The Ride",
+            [],
+            [],
+            []
+        );
+    }
 }
