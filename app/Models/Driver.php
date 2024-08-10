@@ -21,6 +21,10 @@ class Driver extends Authenticatable
         "password",
         "national_id",
         "picture",
+        "social_status",
+        "lng",
+        "lat",
+        "is_approved",
         "status",
         "gender",
         "super_key",
@@ -43,6 +47,10 @@ class Driver extends Authenticatable
 
     public function transaction() {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function rejected() {
+        return $this->hasOne(RejectMessage::class);
     }
 
     public function getJWTIdentifier()

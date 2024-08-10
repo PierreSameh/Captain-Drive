@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('drivers', function (Blueprint $table) {
-            $table->boolean('is_approved')->default(0);
+            $table->integer('is_approved')->default(0);
         });
     }
 

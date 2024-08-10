@@ -50,9 +50,12 @@ Route::get('/driver', [DriverController::class,'getUserDriver'])->middleware('au
 Route::post('/driver/edit', [DriverController::class,"editProfileDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/login', [DriverController::class, 'loginDriver']);
 Route::get('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/rejected', [DriverController::class, "deleteDriverAfterReject"])->middleware('auth:sanctum,driver');
 //
 Route::get('/admin/get-driver/{driver}', [DriverController::class,'getDriverForAdmin'])->middleware('auth:sanctum');
+Route::get('/admin/all-unapproved-drivers', [DriverController::class,'getAllUnapprovedDrivers'])->middleware('auth:sanctum');
 Route::post('/admin/approve-driver/{driver}', [DriverController::class,'approveDriver'])->middleware('auth:sanctum');
+Route::post('/admin/reject-driver/{driver}', [DriverController::class,'rejectDriver'])->middleware('auth:sanctum');
 
 //WalletController
 Route::post('/driver/add-wallet', [WalletController::class,'addWallet'])->middleware('auth:sanctum,driver');

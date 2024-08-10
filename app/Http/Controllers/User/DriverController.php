@@ -17,6 +17,7 @@ use App\Models\Driver;
 use App\Models\DriverDoc;
 use App\Models\Vehicle;
 use App\Models\Wallet;
+use App\Models\RejectMessage;
 use Illuminate\Support\Str;
 
 
@@ -619,7 +620,7 @@ class DriverController extends Controller
         
     }
 
-    public function getDriverForAdmin(Request $request, $driverId) {
+    public function getDriverForAdmin($driverId) {
         $driver = Driver::with('driverdocs')->find($driverId);
         if ($driver) {
             return $this->handleResponse(
@@ -641,7 +642,29 @@ class DriverController extends Controller
             );
     }
 
-    public function approveDriver(Request $request, $driverId) {
+    public function getAllUnapprovedDrivers() {
+        $drivers = Driver::where('is_approved', 0)->paginate(20);
+        if (count($drivers) > 0) {
+            return $this->handleResponse(
+                true,
+                '',
+                [],
+                [
+                    "drivers" => $drivers
+                ],
+                []
+                );
+        }
+        return $this->handleResponse(
+            false,
+            "Drivers Requests Are Empty",
+            [],
+            [],
+            []
+            );
+    }
+
+    public function approveDriver($driverId) {
         $driver = Driver::with("driverdocs")->find($driverId);
         if ($driver) {
             $driver->is_approved = 1;
@@ -663,5 +686,67 @@ class DriverController extends Controller
             [],
             []
             );
+    }
+
+    public function rejectDriver(Request $request, $driverId) {
+        $driver = Driver::find($driverId);
+        if ($driver) {
+            $validator = Validator::make($request->all(), [
+                "reasons"=> ["string", "max:1000"]
+            ]);
+            if ($validator->fails()) {
+                return $this->handleResponse(
+                    false,
+                    "",
+                    [$validator->errors()->first()],
+                    [],
+                    []
+                    );
+                }
+            $driver->is_approved = -1;
+            $driver->save();
+            $reject = new RejectMessage();
+            $reject->driver_id = $driverId;
+            $reject->reasons = $request->reasons;
+            $reject->save();
+            return $this->handleResponse(
+                true,
+                "Sorry, You Were Rejected!",
+                [],
+                [
+                    "reasons"=> $reject->reasons
+                ],
+                []
+                );
+        }
+            return $this->handleResponse(
+                false,
+                "Driver Not Found",
+                [],
+                [],
+                []
+                );
+    }
+
+    public function deleteDriverAfterReject(Request $request) {
+        $driver = $request->user();
+        $driverdata = Driver::where("id", $driver->id)->first();
+        if ($driver) {
+            $driver->delete();
+            return $this->handleResponse(
+                true,
+                "Try Registering Again",
+                [],
+                [],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "Not Found",
+                [],
+                [],
+                []
+                );
     }
 }
