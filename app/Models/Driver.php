@@ -31,7 +31,7 @@ class Driver extends Authenticatable
     ];
 
     public function driverdocs() {
-        return $this->hasOne(DriverDoc::class,"id","driver_id");
+        return $this->hasMany(DriverDoc::class);
     }
     public function vehicle() {
         return $this->hasOne(Vehicle::class,"id","driver_id");
