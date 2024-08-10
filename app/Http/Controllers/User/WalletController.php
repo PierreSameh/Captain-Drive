@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Wallet;
+use App\Models\Transaction;
 use App\Models\Driver;
 use Illuminate\Support\Facades\Validator;
 
@@ -64,6 +65,10 @@ class WalletController extends Controller
         if (isset($wallet)) {
             $wallet->balance = $wallet->balance + $request->balance;
             $wallet->save();
+            $transaction = new Transaction();
+            $transaction->driver_id = $driver->id;
+            $transaction->amount = $request->balance;
+            $transaction->save(); 
 
             return $this->handleResponse(
                 true,
