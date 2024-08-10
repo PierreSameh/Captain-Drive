@@ -11,11 +11,50 @@ use App\Models\Offer;
 use App\Models\RideRequest;
 use Illuminate\Support\Facades\Validator;
 use App\HandleTrait;
+use Illuminate\Support\Facades\DB;
+
 
 
 class OfferController extends Controller
 {
     use HandleTrait;
+
+    public function showNearRequests(Request $request) {
+        $driver = $request->user();
+        $radius = 6371; // Earth's radius in kilometers
+    
+        $requests = DB::table('ride_requests')
+            ->select('ride_requests.*', DB::raw("
+                ($radius * acos(cos(radians(?)) 
+                * cos(radians(ride_requests.st_lat)) 
+                * cos(radians(ride_requests.st_lng) - radians(?)) 
+                + sin(radians(?)) 
+                * sin(radians(ride_requests.st_lat)))) AS distance"))
+            ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
+            ->having('distance', '<', 10) 
+            ->orderBy('distance', 'asc')
+            ->get();
+        if (count( $requests ) > 0) {
+        return $this->handleResponse(
+            true,
+            "",
+            [],
+            [
+                "requests" => $requests
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Waiting For Nearby Requests",
+            [],
+            [],
+            []
+        );
+    }
+    
+
     public function makeOffer(Request $request, $requestId){
         $validator = Validator::make($request->all(), [
             "price"=> ["required", "numeric"],
