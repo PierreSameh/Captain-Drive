@@ -37,7 +37,7 @@ class DriverController extends Controller
             'unique:drivers,add_phone'],
             'add_phone' => ['required','string','numeric','digits:11','unique:drivers,add_phone'],
             'national_id' => ['required','numeric', 'digits:14'],
-            'status'=> ['required','string'],
+            'social_status'=> ['required','string'],
             'gender'=> ['required','string','max:10'],
             'picture'=> ['required','image','mimes:jpeg,png,jpg,gif','max:2048'],
             'password' => ['required','string','min:8',
@@ -74,7 +74,7 @@ class DriverController extends Controller
             'phone'=> $request->phone,
             'add_phone'=> $request->add_phone,
             'national_id'=> $request->national_id,
-            'status'=> $request->status,
+            'social_status'=> $request->social_status,
             'gender'=> $request->gender,
             'super_key'=> $superKey,
             'unique_id'=> $uniqueID,
@@ -215,10 +215,6 @@ class DriverController extends Controller
         $max = pow(10, $length) - 1;
         return mt_rand($min, $max);
     }
-    // private function generateUniqueId($length)
-    // {
-    //     return Str::random($length);
-    // }
 
     public function askEmailCodeDriver(Request $request) {
         $driver = $request->user();
@@ -624,7 +620,7 @@ class DriverController extends Controller
     }
 
     public function getDriverForAdmin(Request $request, $driverId) {
-        $driver = Driver::with('driverdocs')->findOrFail($driverId);
+        $driver = Driver::with('driverdocs')->find($driverId);
         if ($driver) {
             return $this->handleResponse(
                 true,
@@ -645,4 +641,27 @@ class DriverController extends Controller
             );
     }
 
+    public function approveDriver(Request $request, $driverId) {
+        $driver = Driver::with("driverdocs")->find($driverId);
+        if ($driver) {
+            $driver->is_approved = 1;
+            $driver->save();
+            return $this->handleResponse(
+                true,
+                'Driver Approved',
+                [],
+                [
+                    "driver" => $driver
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Driver Not Found",
+            [],
+            [],
+            []
+            );
+    }
 }
