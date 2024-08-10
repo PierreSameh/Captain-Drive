@@ -8,6 +8,7 @@ use App\Http\Controllers\User\AddressController;
 use App\Http\Controllers\User\DriverController;
 use App\Http\Controllers\User\WalletController;
 use App\Http\Controllers\User\RideController;
+use App\Http\Controllers\User\OfferController;
  
 
 
@@ -67,3 +68,6 @@ Route::post('/driver/delete-wallet', [WalletController::class,'deleteWallet'])->
 Route::post('/ride/request-ride', [RideController::class,'sendRideRequest'])->middleware('auth:sanctum');
 Route::get('/ride/get-request', [RideController::class,'getForUserRideRequest'])->middleware('auth:sanctum');
 Route::post('/ride/{ride}/cancel-request', [RideController::class,'cancelRideRequest'])->middleware('auth:sanctum');
+
+//OfferController
+Route::post('/offer/make-offer/{request}', [OfferController::class,'makeOffer'])->middleware('auth:sanctum,driver');
