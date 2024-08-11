@@ -186,4 +186,84 @@ class OfferController extends Controller
             []
             );
     }
+
+    public function getOfferUser($offerId) {
+        $offer = Offer::with('request')->where('id', $offerId)->first();
+        if (isset($offer)) {
+            return $this->handleResponse(
+                true,
+                'Offer',
+                [],
+                [
+                    'offer' => $offer
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                'No Offers',
+                [],
+                [],
+                []
+            );
+    }
+
+    public function acceptOfferUser(Request $request, $offerId){
+        $user = $request->user();
+        $offer = Offer::where('id', $offerId)->first();
+        $rideRequest = RideRequest::where('id', $offer->request_id)->first();
+        if (isset($offer)) {
+            $rideRequest->status = "closed";
+            $rideRequest->save();
+
+            $offer->status = "accepted";
+            $offer->save();
+
+            return $this->handleResponse(
+                true,
+                "Offer Accepted",
+                [],
+                [
+                    "offer" => $offer,
+                    "ride_request" => $rideRequest
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "Offer Not Found",
+                [],
+                [],
+                []
+            );
+
+    }
+    public function rejectOfferUser(Request $request, $offerId){
+        $user = $request->user();
+        $offer = Offer::where('id', $offerId)->first();
+        if (isset($offer)) {
+            $offer->status = "rejected";
+            $offer->save();
+
+            return $this->handleResponse(
+                true,
+                "Offer Accepted",
+                [],
+                [
+                    "offer" => $offer,
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "Offer Not Found",
+                [],
+                [],
+                []
+            );
+
+    }
 }

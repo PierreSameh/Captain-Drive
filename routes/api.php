@@ -80,3 +80,6 @@ Route::post('/offer/driver/cancel-offer/{offer}', [OfferController::class,'cance
 
 #User
 Route::get('/offer/user/get-all-offers', [OfferController::class,'getAllOffersUser'])->middleware('auth:sanctum');
+Route::get('/offer/user/get-offer/{offer}', [OfferController::class,'getOfferUser'])->middleware('auth:sanctum');
+Route::post('/offer/user/accept-offer/{offer}', [OfferController::class,'acceptOfferUser'])->middleware('auth:sanctum');
+Route::post('/offer/user/reject-offer/{offer}', [OfferController::class,'rejectOfferUser'])->middleware('auth:sanctum');

@@ -610,7 +610,7 @@ class DriverController extends Controller
 
     public function getUserDriver(Request $request) {
         $user = $request->user();
-        $data = Driver::with('vehicle')->where('id', $user->id)->first();
+        $data = Driver::with('vehicle', 'wallet')->where('id', $user->id)->first();
         if ($user) {
         return $this->handleResponse(
             true,
