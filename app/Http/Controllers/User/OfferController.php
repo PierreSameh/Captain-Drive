@@ -69,8 +69,10 @@ class OfferController extends Controller
             );
         }
         $driver = $request->user();
-        $exists = Offer::where("request_id", $requestId)->first();
-        if ($exists) {
+        $exists = Offer::where("driver_id", $driver->id)
+        ->where("request_id", $requestId)
+        ->first();
+        if (isset($exists)) {
             return $this->handleResponse(
                 false,
                 "You Can't Send More Than 1 Offer",
@@ -99,6 +101,29 @@ class OfferController extends Controller
         return $this->handleResponse(
             false,
             "Ride Request is No Longer Available",
+            [],
+            [],
+            []
+        );
+    }
+
+    public function cancelOffer(Request $request, $offerId) {
+        $driver = $request->user();
+        $lastOffer = Offer::where("driver_id", $driver->id)
+        ->where("id", $offerId)->first();
+        if (isset($lastOffer)) {
+            $lastOffer->delete();
+            return $this->handleResponse(
+                true,
+                "Offer Canceled",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Offer Not Found",
             [],
             [],
             []

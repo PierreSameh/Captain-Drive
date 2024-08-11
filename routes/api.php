@@ -74,3 +74,4 @@ Route::post('/ride/{ride}/cancel-request', [RideController::class,'cancelRideReq
 //OfferController
 Route::get('/offer/show-near-requests', [OfferController::class, 'showNearRequests'])->middleware('auth:sanctum,driver');
 Route::post('/offer/make-offer/{request}', [OfferController::class,'makeOffer'])->middleware('auth:sanctum,driver');
+Route::post('/offer/cancel-offer/{offer}', [OfferController::class,'cancelOffer'])->middleware('auth:sanctum,driver');
