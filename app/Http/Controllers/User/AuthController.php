@@ -225,7 +225,7 @@ class AuthController extends Controller
     public function changePassword(Request $request) {
         $validator = Validator::make($request->all(), [
             "old_password" => 'required',
-            'password' => 'required|string|min:12|
+            'password' => 'required|string|min:8|
             regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u
             |confirmed',
             ], [

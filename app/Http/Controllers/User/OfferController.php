@@ -54,7 +54,6 @@ class OfferController extends Controller
         );
     }
     
-
     public function makeOffer(Request $request, $requestId){
         $validator = Validator::make($request->all(), [
             "price"=> ["required", "numeric"],
@@ -107,6 +106,29 @@ class OfferController extends Controller
         );
     }
 
+    public function getOfferDriver(Request $request) {
+        $driver = $request->user();
+        $offer = Offer::where("driver_id", $driver->id)->where('status', "pending")->first();
+        if (isset($offer)) {
+            return $this->handleResponse(
+                true,
+                "Your Placed Offer",
+                [],
+                [
+                    "offer"=> $offer
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "No Placed Offers",
+                [],
+                [],
+                []
+            );
+    }
+
     public function cancelOffer(Request $request, $offerId) {
         $driver = $request->user();
         $lastOffer = Offer::where("driver_id", $driver->id)
@@ -128,5 +150,40 @@ class OfferController extends Controller
             [],
             []
         );
+    }
+
+    public function getAllOffersUser(Request $request) {
+        $user = $request->user();
+        $rideRequest = RideRequest::where("user_id", $user->id)
+        ->where("status", "pending")
+        ->first();
+        if (isset($rideRequest)) {
+            $offers = Offer::where('request_id', $rideRequest->id)->get();
+            if(count($offers) > 0) {
+            return $this->handleResponse(
+                true,
+                "Offers",
+                [],
+                [
+                    "offers" => $offers
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "No Offers",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Request Not Available",
+            [],
+            [],
+            []
+            );
     }
 }

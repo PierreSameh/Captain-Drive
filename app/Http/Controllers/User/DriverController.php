@@ -318,7 +318,7 @@ class DriverController extends Controller
     public function changePasswordDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "old_password" => 'required',
-            'password' => 'required|string|min:12|
+            'password' => 'required|string|min:8|
             regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u
             |confirmed',
             ], [
@@ -610,13 +610,14 @@ class DriverController extends Controller
 
     public function getUserDriver(Request $request) {
         $user = $request->user();
+        $data = Driver::with('vehicle')->where('id', $user->id)->first();
         if ($user) {
         return $this->handleResponse(
             true,
             "Driver Data",
             [],
             [
-                "user" => $user
+                "user" => $data
             ],
             []
             );
