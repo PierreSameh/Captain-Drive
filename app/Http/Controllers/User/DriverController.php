@@ -452,7 +452,7 @@ class DriverController extends Controller
 
 
 
-        $user = User::where("email", $request->email)->first();
+        $user = Driver::where("email", $request->email)->first();
         $code = $request->code;
 
 
@@ -509,7 +509,7 @@ class DriverController extends Controller
 
 
 
-        $user = User::where("email", $request->email)->first();
+        $user = Driver::where("email", $request->email)->first();
         $code = $request->code;
 
 
