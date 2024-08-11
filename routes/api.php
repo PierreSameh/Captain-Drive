@@ -15,10 +15,11 @@ use App\Http\Controllers\User\OfferController;
 
 //AuthController
 Route::post('/user/register', [AuthController::class, 'register']);
-Route::post('/user/forgot-password', [AuthController::class, "forgetPassword"]);
-Route::post('/user/forgot-password-change', [AuthController::class, "forgetPasswordCheckCode"]);
+Route::get('/user/forgot-password', [AuthController::class, "sendForgetPasswordEmail"]);
+Route::post('/user/forgot-password-check-code', [AuthController::class, "forgetPasswordCheckCode"]);
+Route::post('/user/forgot-password-set', [AuthController::class,'forgetPassword']);
 Route::post('/user/login', [AuthController::class, 'login']);
-Route::get('/user/logout', [AuthController::class, "logout"])->middleware('auth:sanctum');
+Route::post('/user/logout', [AuthController::class, "logout"])->middleware('auth:sanctum');
 Route::get('/user/ask-email-verfication-code', [AuthController::class, "askEmailCode"])->middleware('auth:sanctum');
 Route::post('/user/verify-email', [AuthController::class, "verifyEmail"])->middleware('auth:sanctum');
 Route::post('/user/change-password', [AuthController::class, "changePassword"])->middleware('auth:sanctum');
@@ -45,12 +46,13 @@ Route::post('/driver/register', [DriverController::class,'registerDriver']);
 Route::get('/driver/ask-email-verfication-code', [DriverController::class, "askEmailCodeDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/verify-email', [DriverController::class, "verifyEmailDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/change-password', [DriverController::class, "changePasswordDriver"])->middleware('auth:sanctum,driver');
-Route::post('/driver/forgot-password', [DriverController::class, "forgetPasswordDriver"]);
-Route::post('/driver/forgot-password-change', [DriverController::class, "forgetPasswordCheckCodeDriver"]);
+Route::post('/driver/forgot-password-check-code', [DriverController::class, "forgetPasswordCheckCodeDriver"]);
+Route::get('/driver/forgot-password', [DriverController::class, "sendForgetPasswordEmailDriver"]);
+Route::post('/driver/forgot-password-set', [DriverController::class,'forgetPasswordDriver']);
 Route::get('/driver', [DriverController::class,'getUserDriver'])->middleware('auth:sanctum,driver');
 Route::post('/driver/edit', [DriverController::class,"editProfileDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/login', [DriverController::class, 'loginDriver']);
-Route::get('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
+Route::post('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/rejected', [DriverController::class, "deleteDriverAfterReject"])->middleware('auth:sanctum,driver');
 //
 Route::get('/admin/get-driver/{driver}', [DriverController::class,'getDriverForAdmin'])->middleware('auth:sanctum');

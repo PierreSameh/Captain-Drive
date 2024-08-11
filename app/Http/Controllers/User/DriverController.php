@@ -220,7 +220,7 @@ class DriverController extends Controller
     public function askEmailCodeDriver(Request $request) {
         $driver = $request->user();
         if ($driver) {
-            $code = rand(100000, 999999);
+            $code = rand(1000, 9999);
 
             $driver->email_last_verfication_code = Hash::make($code);
             $driver->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
@@ -363,7 +363,7 @@ class DriverController extends Controller
     }
 
 
-    public function forgetPasswordDriver(Request $request) {
+    public function sendForgetPasswordEmailDriver(Request $request) {
         $validator = Validator::make($request->all(), [
             "email" => 'required|email',
         ]);
@@ -378,10 +378,11 @@ class DriverController extends Controller
             );
         }
 
-        $user = Driver::where("email", $request->email)->first();
+        $user = User::where("email", $request->email)->first();
+
 
             if ($user) {
-                $code = rand(100000, 999999);
+                $code = rand(1000, 9999);
 
                 $user->email_last_verfication_code = Hash::make($code);
                 $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
@@ -419,11 +420,24 @@ class DriverController extends Controller
             }
     }
 
-    public function forgetPasswordCheckCodeDriver(Request $request) {
+    public function forgetPasswordDriver(Request $request) {
         $validator = Validator::make($request->all(), [
-            "code" => ["required"],
             "email" => ["required", "email"],
+            'password' => [
+                'required', // Required only if joined_with is 1
+                'min:8',
+                'regex:/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u',
+                'confirmed'
+            ],
+        ], [
+            "email.required" => "من فضلك ادخل بريدك الاكتروني ",
+            "email.email" => "من فضلك ادخل بريد الكتروني صالح",
+            "password.required" => "ادخل كلمة المرور",
+            "password.min" => "يجب ان تكون كلمة المرور من 8 احرف على الاقل",
+            "password.regex" => "يجب ان تحتوي كلمة المرور علي حروف وارقام ورموز",
+            "password.confirmed" => "كلمة المرور والتاكيد غير متطابقان",
         ]);
+
 
         if ($validator->fails()) {
             return $this->handleResponse(
@@ -431,22 +445,82 @@ class DriverController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                ["Send The email User sent in Forgot password page"]
+                []
             );
         }
 
-        // This email request is coming from a hidden input type that referes to the previous page
-        $user = Driver::where("email", $request->email)->first();
+
+
+
+        $user = User::where("email", $request->email)->first();
         $code = $request->code;
+
+
+        if ($user) {
+            $user->password = Hash::make($request->password);
+            $user->save();
+
+
+            if ($user) {
+                return $this->handleResponse(
+                    true,
+                    "تم تعين كلمة المرور بنجاح ",
+                    [],
+                    [],
+                    []
+                );
+            }
+        }
+        else {
+            return $this->handleResponse(
+                false,
+                "",
+                ["هذا الحساب غير مسجل"],
+                [],
+                []
+            );
+        }
+
+
+    }
+
+
+    public function forgetPasswordCheckCodeDriver(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "email" => ["required", "email"],
+            "code" => ["required"],
+        ], [
+            "code.required" => "ادخل رمز التاكيد ",
+            "email.required" => "من فضلك ادخل بريدك الاكتروني ",
+            "email.email" => "من فضلك ادخل بريد الكتروني صالح",
+        ]);
+
+
+        if ($validator->fails()) {
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+
+
+
+
+        $user = User::where("email", $request->email)->first();
+        $code = $request->code;
+
 
         if ($user) {
             if (!Hash::check($code, $user->email_last_verfication_code ? $user->email_last_verfication_code : Hash::make(0000))) {
                 return $this->handleResponse(
                     false,
                     "",
-                    ["Enter a Valid Code"],
+                    ["الرمز غير صحيح"],
                     [],
-                    ["Send The email User sent in Forgot password page"]
+                    []
                 );
             } else {
                 $timezone = 'Europe/Istanbul'; // Replace with your specific timezone if different
@@ -455,45 +529,33 @@ class DriverController extends Controller
                     return $this->handleResponse(
                         false,
                         "",
-                        ["Code is Expired"],
+                        ["الرمز غير ساري"],
                         [],
-                        ["Send The email User sent in Forgot password page"]
+                        []
                     );
                 } else {
                     if ($user) {
-                        $passwordValidator = Validator::make($request->all(), [
-                            "password" => 'required|string|min:12|
-                            regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/u
-                            |confirmed',
-                            ], [
-                                "password.regex" => "Password must have Captial and small letters, and a special character",
-                            ]);
-
-                            if ($passwordValidator->fails()) {
-                                return $this->handleResponse(
-                                    false,
-                                    "",
-                                    [$validator->errors()->first()],
-                                    [],
-                                    ["Send The email User sent in Forgot password page"]
-                                );
-                            }
-
-                            $user->password = Hash::make($request->password);
-                            $user->save();
-                
-                
-                            return $this->handleResponse(
-                                true,
-                                "Password Changed Successfully",
-                                [],
-                                [],
-                                ["Send The email User sent in Forgot password page"]
-                            );
-                        }
+                        return $this->handleResponse(
+                            true,
+                            "الرمز صحيح",
+                            [],
+                            [],
+                            []
+                        );
                     }
                 }
             }
+        } else {
+            return $this->handleResponse(
+                false,
+                "",
+                ["هذا الحساب غير مسجل"],
+                [],
+                []
+            );
+        }
+
+
     }
 
     public function loginDriver(Request $request) {
