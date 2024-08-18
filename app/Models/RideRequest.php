@@ -25,6 +25,10 @@ class RideRequest extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function stops(){
+        return $this->hasMany(RideRequestStop::class);
+    }
+
     public function offers(){
         return $this->hasMany(Offer::class);
     }
