@@ -25,17 +25,30 @@ class OfferController extends Controller
         $radius = 6371; // Earth's radius in kilometers
         $vehicle = Vehicle::where('driver_id', $driver->id)->first();
     
-        $requests = DB::table('ride_requests')
-            ->select('ride_requests.*', DB::raw("
+        // $requests = DB::table('ride_requests')
+        //     ->select('ride_requests.*', DB::raw("
+        //         ($radius * acos(cos(radians(?)) 
+        //         * cos(radians(ride_requests.st_lat)) 
+        //         * cos(radians(ride_requests.st_lng) - radians(?)) 
+        //         + sin(radians(?)) 
+        //         * sin(radians(ride_requests.st_lat)))) AS distance"))
+        //     ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
+        //     ->having('distance', '<', 10) 
+        //     ->orderBy('distance', 'asc')
+        //     ->where('vehicle', $vehicle->type)
+        //     ->with('stops')
+        //     ->get();
+        $requests = RideRequest::select('ride_requests.*', DB::raw("
                 ($radius * acos(cos(radians(?)) 
                 * cos(radians(ride_requests.st_lat)) 
                 * cos(radians(ride_requests.st_lng) - radians(?)) 
                 + sin(radians(?)) 
                 * sin(radians(ride_requests.st_lat)))) AS distance"))
             ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
-            ->having('distance', '<', 10) 
+            ->having('distance', '<', 10)
             ->orderBy('distance', 'asc')
             ->where('vehicle', $vehicle->type)
+            ->with('stops') // Eager load the 'stops' relationship
             ->get();
         if (count( $requests ) > 0) {
         return $this->handleResponse(

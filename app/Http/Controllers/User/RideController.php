@@ -94,7 +94,7 @@ class RideController extends Controller
 
     public function getForUserRideRequest(Request $request) {
         $user = $request->user();
-        $ride = RideRequest::where("user_id", $user->id)->first();
+        $ride = RideRequest::where("user_id", $user->id)->with('stops')->latest()->limit(1)->get();
         if ($ride){
             return $this->handleResponse(
                 true,
