@@ -11,6 +11,9 @@ class RideRequest extends Model
 
     protected $fillable = [
         "user_id",
+        "vehicle",
+        "st_location",
+        "en_location",
         "st_lng",
         "st_lat",
         "en_lng",

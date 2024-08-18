@@ -684,7 +684,7 @@ class DriverController extends Controller
     }
 
     public function getDriverForAdmin($driverId) {
-        $driver = Driver::with('driverdocs')->find($driverId);
+        $driver = Driver::with('driverdocs', 'vehicle')->find($driverId);
         if ($driver) {
             return $this->handleResponse(
                 true,

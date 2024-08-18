@@ -12,6 +12,7 @@ use App\Models\RideRequest;
 use Illuminate\Support\Facades\Validator;
 use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
+use App\Models\Vehicle;
 
 
 
@@ -22,6 +23,7 @@ class OfferController extends Controller
     public function showNearRequests(Request $request) {
         $driver = $request->user();
         $radius = 6371; // Earth's radius in kilometers
+        $vehicle = Vehicle::where('driver_id', $driver->id)->first();
     
         $requests = DB::table('ride_requests')
             ->select('ride_requests.*', DB::raw("
@@ -33,6 +35,7 @@ class OfferController extends Controller
             ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
             ->having('distance', '<', 10) 
             ->orderBy('distance', 'asc')
+            ->where('vehicle', $vehicle->type)
             ->get();
         if (count( $requests ) > 0) {
         return $this->handleResponse(
@@ -46,7 +49,7 @@ class OfferController extends Controller
         );
         }
         return $this->handleResponse(
-            false,
+            true,
             "Waiting For Nearby Requests",
             [],
             [],

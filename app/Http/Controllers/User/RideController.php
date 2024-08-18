@@ -15,6 +15,29 @@ class RideController extends Controller
     use HandleTrait;
 
     public function sendRideRequest(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "vehicle"=> ["required", "numeric", "in:1,2,3,4,5"],
+            "st_location"=> ["required","string","max:255"],
+            "en_location"=> ["required","string","max:255"],
+        ]);
+        if ($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
+            );
+        }
+
         $user = $request->user();
         $st_lng = $request->st_lng;
         $st_lat = $request->st_lat;
@@ -23,6 +46,9 @@ class RideController extends Controller
         if ($user && $st_lng && $st_lat && $en_lng && $en_lat){
             $rideRequest = RideRequest::create([
                 "user_id"=> $user->id,
+                "vehicle"=> $request->vehicle,
+                "st_location"=> $request->st_location,
+                "en_location"=> $request->en_location,
                 "st_lng"=> $st_lng,
                 "st_lat"=> $st_lat,
                 "en_lng"=> $en_lng,
