@@ -812,4 +812,41 @@ class DriverController extends Controller
                 []
                 );
     }
+
+    public function setDriverStatus(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "status"=> ["required","string", "in:offline,online,busy"],
+            ]);
+            if ($validator->fails()) {
+                return $this->handleResponse(
+                    false,
+                    "",
+                    [$validator->errors()->first()],
+                    [],
+                    []
+                );
+            }
+        $driver = $request->user();
+        if($driver) {
+        $driver->status = $request->status;
+        $driver->save();
+
+        return $this->handleResponse(
+            true,
+            "",
+            [],
+            [
+                "driver" => $driver,
+            ],
+            []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Driver Not Found",
+            [],
+            [],
+            []
+        );
+    }
 }
