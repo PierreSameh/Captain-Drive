@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\HandleTrait;
 use App\Models\RideRequest;
+use App\Models\RideRequestStop;
 
 class RideController extends Controller
 {
@@ -19,7 +20,9 @@ class RideController extends Controller
             "vehicle"=> ["required", "numeric", "in:1,2,3,4,5"],
             "st_location"=> ["required","string","max:255"],
             "en_location"=> ["required","string","max:255"],
+            "stop_locations.*"=> ["array:stop_location,lng,lat"],
         ]);
+        
         if ($validator->fails()){
             return $this->handleResponse(
                 false,
@@ -54,13 +57,27 @@ class RideController extends Controller
                 "en_lng"=> $en_lng,
                 "en_lat"=> $en_lat
             ]);
+            $stopLocations = [];
+        if ($request->stop_locations) {
+            foreach ($request->stop_locations as $stop_location) {
+    
+                $stop = RideRequestStop::create([
+                    "ride_request_id"=> $rideRequest->id,
+                    'stop_location' => $stop_location['stop_location'],
+                    'lng' => $stop_location['lng'],
+                    'lat'=> $stop_location['lat']
+                ]);
+
+                $stopLocations[] = $stop;
+            } 
 
             return $this->handleResponse(
                 true,
                 "Ride Request Sent Successfully",
                 [],
                 [
-                    "Request" => $rideRequest
+                    "Request" => $rideRequest,
+                    "stops"=> $stopLocations
                 ],
                 []
             );
@@ -72,6 +89,7 @@ class RideController extends Controller
             [],
             []
         );
+    }
     }
 
     public function getForUserRideRequest(Request $request) {

@@ -23,4 +23,8 @@ class Offer extends Model
     public function request(){
         return $this->belongsTo(RideRequest::class);
     }
+
+    public function rides(){
+        return $this->hasMany(Ride::class);
+    }
 }
