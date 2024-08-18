@@ -849,4 +849,43 @@ class DriverController extends Controller
             []
         );
     }
+
+    public function setDriverLocation(Request $request){
+        $validator = Validator::make($request->all(), [
+            "lng"=> ["required","string"],
+            "lat"=> ["required","string"],
+            ]);
+            if ($validator->fails()) {
+                return $this->handleResponse(
+                    false,
+                    "",
+                    [$validator->errors()->first()],
+                    [],
+                    []
+                );
+            }
+        $driver = $request->user();
+        if($driver) {
+        $driver->lng = $request->lng;
+        $driver->lat = $request->lat;
+        $driver->save();
+
+        return $this->handleResponse(
+            true,
+            "",
+            [],
+            [
+                "driver" => $driver,
+            ],
+            []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Driver Not Found",
+            [],
+            [],
+            []
+        );
+    }
 }

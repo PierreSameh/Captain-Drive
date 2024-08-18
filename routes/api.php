@@ -55,6 +55,7 @@ Route::post('/driver/login', [DriverController::class, 'loginDriver']);
 Route::post('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/rejected', [DriverController::class, "deleteDriverAfterReject"])->middleware('auth:sanctum,driver');
 Route::post('/driver/set-status', [DriverController::class,'setDriverStatus'])->middleware('auth:sanctum');
+Route::post('/driver/set-location', [DriverController::class,'setDriverLocation'])->middleware('auth:sanctum');
 //
 Route::get('/admin/get-driver/{driver}', [DriverController::class,'getDriverForAdmin'])->middleware('auth:sanctum');
 Route::get('/admin/all-unapproved-drivers', [DriverController::class,'getAllUnapprovedDrivers'])->middleware('auth:sanctum');
