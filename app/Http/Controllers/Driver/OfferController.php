@@ -160,7 +160,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled'])
+        ->whereNotIn('status', ['completed', 'canceled', 'canceled_driver'])
         ->with(['offer.request'])
         ->first();
         if($ride){
@@ -183,5 +183,35 @@ class OfferController extends Controller
         );
         
         
+    }
+
+    public function cancelRideByDriver(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled'])
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+        $ride->status = "canceled_driver";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Ride Request Canceled",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
     }
 }

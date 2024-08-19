@@ -263,7 +263,7 @@ class RideController extends Controller
         $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
             $q->where('user_id', $userId);
         })
-        ->whereNotIn('status', ['completed', 'canceled'])
+        ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
         ->with(['offer.request'])
         ->first();
         if($ride){
