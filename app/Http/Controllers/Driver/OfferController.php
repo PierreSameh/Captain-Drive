@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\User;
+namespace App\Http\Controllers\Driver;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -25,20 +25,6 @@ class OfferController extends Controller
         $driver = $request->user();
         $radius = 6371; // Earth's radius in kilometers
         $vehicle = Vehicle::where('driver_id', $driver->id)->first();
-    
-        // $requests = DB::table('ride_requests')
-        //     ->select('ride_requests.*', DB::raw("
-        //         ($radius * acos(cos(radians(?)) 
-        //         * cos(radians(ride_requests.st_lat)) 
-        //         * cos(radians(ride_requests.st_lng) - radians(?)) 
-        //         + sin(radians(?)) 
-        //         * sin(radians(ride_requests.st_lat)))) AS distance"))
-        //     ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
-        //     ->having('distance', '<', 10) 
-        //     ->orderBy('distance', 'asc')
-        //     ->where('vehicle', $vehicle->type)
-        //     ->with('stops')
-        //     ->get();
         $requests = RideRequest::select('ride_requests.*', DB::raw("
                 ($radius * acos(cos(radians(?)) 
                 * cos(radians(ride_requests.st_lat)) 
@@ -169,122 +155,33 @@ class OfferController extends Controller
         );
     }
 
-    public function getAllOffersUser(Request $request) {
-        $user = $request->user();
-        $rideRequest = RideRequest::where("user_id", $user->id)
-        ->where("status", "pending")
+    public function getRideDriver(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled'])
+        ->with(['offer.request'])
         ->first();
-        if (isset($rideRequest)) {
-            $offers = Offer::where('request_id', $rideRequest->id)->get();
-            if(count($offers) > 0) {
+        if($ride){
             return $this->handleResponse(
                 true,
-                "Offers",
+                "",
                 [],
                 [
-                    "offers" => $offers
+                    "ride" => $ride
                 ],
-                []
-                );
-            }
-            return $this->handleResponse(
-                true,
-                "No Offers",
-                [],
-                [],
                 []
             );
         }
         return $this->handleResponse(
-            false,
-            "Request Not Available",
+            true,
+            "No Active Rides",
             [],
             [],
             []
-            );
-    }
-
-    public function getOfferUser($offerId) {
-        $offer = Offer::with('request')->where('id', $offerId)->first();
-        if (isset($offer)) {
-            return $this->handleResponse(
-                true,
-                'Offer',
-                [],
-                [
-                    'offer' => $offer
-                ],
-                []
-                );
-            }
-            return $this->handleResponse(
-                false,
-                'No Offers',
-                [],
-                [],
-                []
-            );
-    }
-
-    public function acceptOfferUser(Request $request, $offerId){
-        $user = $request->user();
-        $offer = Offer::where('id', $offerId)->first();
-        $rideRequest = RideRequest::where('id', $offer->request_id)->first();
-        if (isset($offer)) {
-            $rideRequest->status = "closed";
-            $rideRequest->save();
-
-            $offer->status = "accepted";
-            $offer->save();
-
-            Ride::create([
-                "offer_id" => $offer->id,
-            ]);
-
-            return $this->handleResponse(
-                true,
-                "Offer Accepted",
-                [],
-                [
-                    "offer" => $offer,
-                    "ride_request" => $rideRequest
-                ],
-                []
-                );
-            }
-            return $this->handleResponse(
-                false,
-                "Offer Not Found",
-                [],
-                [],
-                []
-            );
-
-    }
-    public function rejectOfferUser(Request $request, $offerId){
-        $user = $request->user();
-        $offer = Offer::where('id', $offerId)->first();
-        if (isset($offer)) {
-            $offer->status = "rejected";
-            $offer->save();
-
-            return $this->handleResponse(
-                true,
-                "Offer Accepted",
-                [],
-                [
-                    "offer" => $offer,
-                ],
-                []
-                );
-            }
-            return $this->handleResponse(
-                false,
-                "Offer Not Found",
-                [],
-                [],
-                []
-            );
-
+        );
+        
+        
     }
 }

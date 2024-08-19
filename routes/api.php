@@ -5,10 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\User\AuthController;
 use App\Http\Controllers\User\SocialiteController;
 use App\Http\Controllers\User\AddressController;
-use App\Http\Controllers\User\DriverController;
-use App\Http\Controllers\User\WalletController;
+use App\Http\Controllers\Driver\DriverController;
+use App\Http\Controllers\Driver\WalletController;
 use App\Http\Controllers\User\RideController;
-use App\Http\Controllers\User\OfferController;
+use App\Http\Controllers\Driver\OfferController;
  
 
 
@@ -73,7 +73,11 @@ Route::post('/ride/request-ride', [RideController::class,'sendRideRequest'])->mi
 Route::get('/ride/get-request', [RideController::class,'getForUserRideRequest'])->middleware('auth:sanctum');
 Route::post('/ride/{ride}/cancel-request', [RideController::class,'cancelRideRequest'])->middleware('auth:sanctum');
 Route::get('/ride/get-ride/user', [RideController::class, 'getRideUser'])->middleware('auth:sanctum');
-Route::get('/ride/get-ride/driver', [RideController::class, 'getRideDriver'])->middleware('auth:sanctum');
+#User
+Route::get('/offer/user/get-all-offers', [RideController::class,'getAllOffersUser'])->middleware('auth:sanctum');
+Route::get('/offer/user/get-offer/{offer}', [RideController::class,'getOfferUser'])->middleware('auth:sanctum');
+Route::post('/offer/user/accept-offer/{offer}', [RideController::class,'acceptOfferUser'])->middleware('auth:sanctum');
+Route::post('/offer/user/reject-offer/{offer}', [RideController::class,'rejectOfferUser'])->middleware('auth:sanctum');
 
 //OfferController
 #Driver
@@ -81,9 +85,6 @@ Route::get('/offer/driver/show-near-requests', [OfferController::class, 'showNea
 Route::post('/offer/driver/make-offer/{request}', [OfferController::class,'makeOffer'])->middleware('auth:sanctum,driver');
 Route::get('/offer/driver/get-offer', [OfferController::class,'getOfferDriver'])->middleware('auth:sanctum,driver');
 Route::post('/offer/driver/cancel-offer/{offer}', [OfferController::class,'cancelOffer'])->middleware('auth:sanctum,driver');
+Route::get('/ride/get-ride/driver', [OfferController::class, 'getRideDriver'])->middleware('auth:sanctum');
 
-#User
-Route::get('/offer/user/get-all-offers', [OfferController::class,'getAllOffersUser'])->middleware('auth:sanctum');
-Route::get('/offer/user/get-offer/{offer}', [OfferController::class,'getOfferUser'])->middleware('auth:sanctum');
-Route::post('/offer/user/accept-offer/{offer}', [OfferController::class,'acceptOfferUser'])->middleware('auth:sanctum');
-Route::post('/offer/user/reject-offer/{offer}', [OfferController::class,'rejectOfferUser'])->middleware('auth:sanctum');
+
