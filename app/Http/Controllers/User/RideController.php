@@ -167,4 +167,33 @@ class RideController extends Controller
         
         
     }
+    public function getRideDriver(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled'])
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "ride" => $ride
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "No Active Rides",
+            [],
+            [],
+            []
+        );
+        
+        
+    }
 }
