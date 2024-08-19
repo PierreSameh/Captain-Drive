@@ -7,9 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
+use App\Models\Ride;
 use App\HandleTrait;
 use App\Models\RideRequest;
 use App\Models\RideRequestStop;
+use Illuminate\Support\Facades\DB;
 
 class RideController extends Controller
 {
@@ -134,5 +136,35 @@ class RideController extends Controller
             [],
             []
         );
+    }
+
+    public function getRideUser(Request $request){
+        $userId = $request->user()->id;
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled'])
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "ride" => $ride
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "No Active Rides",
+            [],
+            [],
+            []
+        );
+        
+        
     }
 }

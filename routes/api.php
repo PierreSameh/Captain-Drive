@@ -72,6 +72,7 @@ Route::post('/driver/delete-wallet', [WalletController::class,'deleteWallet'])->
 Route::post('/ride/request-ride', [RideController::class,'sendRideRequest'])->middleware('auth:sanctum');
 Route::get('/ride/get-request', [RideController::class,'getForUserRideRequest'])->middleware('auth:sanctum');
 Route::post('/ride/{ride}/cancel-request', [RideController::class,'cancelRideRequest'])->middleware('auth:sanctum');
+Route::get('/ride/get-ride/user', [RideController::class, 'getRideUser'])->middleware('auth:sanctum');
 
 //OfferController
 #Driver
