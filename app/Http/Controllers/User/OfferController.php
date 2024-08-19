@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
+use App\Models\Ride;
 
 
 
@@ -187,7 +188,7 @@ class OfferController extends Controller
                 );
             }
             return $this->handleResponse(
-                false,
+                true,
                 "No Offers",
                 [],
                 [],
@@ -235,6 +236,10 @@ class OfferController extends Controller
 
             $offer->status = "accepted";
             $offer->save();
+
+            Ride::create([
+                "offer_id" => $offer->id,
+            ]);
 
             return $this->handleResponse(
                 true,
