@@ -288,6 +288,35 @@ class RideController extends Controller
         
     }
 
+    public function cancelRideByUser(Request $request){
+        $userId = $request->user()->id;
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+        $ride->status = "canceled_user";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Ride Request Canceled",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
 
 
 }

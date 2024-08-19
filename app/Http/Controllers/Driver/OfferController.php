@@ -35,6 +35,7 @@ class OfferController extends Controller
             ->having('distance', '<', 10)
             ->orderBy('distance', 'asc')
             ->where('vehicle', $vehicle->type)
+            ->where('status', "pending")
             ->with('stops') // Eager load the 'stops' relationship
             ->get();
         if (count( $requests ) > 0) {
