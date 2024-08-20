@@ -23,6 +23,10 @@ class RideController extends Controller
             "vehicle"=> ["required", "numeric", "in:1,2,3,4,5"],
             "st_location"=> ["required","string","max:255"],
             "en_location"=> ["required","string","max:255"],
+            "st_lng"=> ["required","string"],
+            "st_lat"=> ["required","string"],
+            "en_lng"=> ["required","string"],
+            "en_lat"=> ["required","string"],
             "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
         ]);
         
@@ -90,7 +94,7 @@ class RideController extends Controller
             "Can't Get Location",
             [],
             [],
-            []
+            ["Enter lng & lat data correctly"]
         );
     }
 
