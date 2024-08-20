@@ -23,7 +23,7 @@ class RideController extends Controller
             "vehicle"=> ["required", "numeric", "in:1,2,3,4,5"],
             "st_location"=> ["required","string","max:255"],
             "en_location"=> ["required","string","max:255"],
-            "stop_locations.*"=> ["array:stop_location,lng,lat"],
+            "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
         ]);
         
         if ($validator->fails()){
@@ -61,7 +61,7 @@ class RideController extends Controller
                 "en_lat"=> $en_lat
             ]);
             $stopLocations = [];
-        if ($request->stop_locations) {
+        if ($request->has("stop_locations")) {
             foreach ($request->stop_locations as $stop_location) {
     
                 $stop = RideRequestStop::create([
@@ -73,14 +73,14 @@ class RideController extends Controller
 
                 $stopLocations[] = $stop;
             } 
-
+        }
+            $withStops = RideRequest::where('id', $rideRequest->id)->with('stops')->first();
             return $this->handleResponse(
                 true,
                 "Ride Request Sent Successfully",
                 [],
                 [
-                    "Request" => $rideRequest,
-                    "stops"=> $stopLocations
+                    "Request" => $withStops,
                 ],
                 []
             );
@@ -93,7 +93,7 @@ class RideController extends Controller
             []
         );
     }
-    }
+
 
     public function getForUserRideRequest(Request $request) {
         $user = $request->user();
@@ -312,6 +312,36 @@ class RideController extends Controller
         return $this->handleResponse(
             false,
             "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
+    public function setToDestination(Request $request){
+        $userId = $request->user()->id;
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
+        ->where('status', 'arrived')
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+        $ride->status = "to_destination";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Your Ride Has Start! Enjoy Your Trip",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Driver Has Not Arrived Yet",
             [],
             [],
             []
