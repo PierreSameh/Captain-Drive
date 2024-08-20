@@ -161,7 +161,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
         ->with(['offer.request'])
         ->first();
         if($ride){
@@ -191,7 +191,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled'])
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
         ->with(['offer.request'])
         ->first();
         if($ride){
@@ -200,6 +200,36 @@ class OfferController extends Controller
         return $this->handleResponse(
             true,
             "Ride Request Canceled",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
+
+    public function setArrived(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['offer.request'])
+        ->first();
+        if($ride){
+        $ride->status = "arrived";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Driver Arrived! Enjoy Your Trip",
             [],
             [
                 "ride" => $ride

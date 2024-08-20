@@ -88,4 +88,5 @@ Route::get('/offer/driver/get-offer', [OfferController::class,'getOfferDriver'])
 Route::post('/offer/driver/cancel-offer/{offer}', [OfferController::class,'cancelOffer'])->middleware('auth:sanctum,driver');
 Route::get('/ride/get-ride/driver', [OfferController::class, 'getRideDriver'])->middleware('auth:sanctum');
 Route::post('/ride/cancel-ride/driver', [OfferController::class, 'cancelRideByDriver'])->middleware('auth:sanctum');
+Route::post('/ride/set-arrived/driver', [OfferController::class, 'setArrived'])->middleware('auth:sanctum');
 
