@@ -363,7 +363,16 @@ class RideController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "note"=>"This Function Rates The Latest Completed Passenger's Ride, It Can't be used with old rides",
+                    "rate" => [
+                        "1" => "1 star",
+                        "2" => "2 stars",
+                        "3" => "3 stars",
+                        "4" => "4 stars",
+                        "5" => "5 stars",
+                    ]
+                ]
             );
         }
         $userId = $request->user()->id;

@@ -14,6 +14,7 @@ use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
 use App\Models\Ride;
+use App\Models\Wallet;
 
 
 
@@ -256,6 +257,9 @@ class OfferController extends Controller
         if($ride){
         $ride->status = "completed";
         $ride->save();
+        $wallet = Wallet::where('driver_id', $driverId)->first();
+        $wallet->balance = $wallet->balance - ($ride->offer->price * 0.20);
+        $wallet->save();
         return $this->handleResponse(
             true,
             "You Have Reached Your Destination, Have A Nice Day!",
