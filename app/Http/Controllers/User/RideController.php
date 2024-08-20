@@ -352,6 +352,68 @@ class RideController extends Controller
         );
     }
 
+    public function review(Request $request){
+        $validator = Validator::make($request->all(),[
+            "rate" => ["nullable", "numeric", "in:1,2,3,4,5"],
+            "review" => ["nullable", "string", "max:1000"]
+        ]);
+        if ($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $userId = $request->user()->id;
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->where('status', 'completed')
+        ->with(['offer.request', 'offer.request.stops'])
+        ->latest()->first();
+        if($ride){
+            $ride->rate = $request->rate;
+            $ride->review = $request->review;
+            $ride->save();
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "ride" => $ride
+                ],
+                [
+                    "This Function Rates The Latest Completed Passenger's Ride, It Can't be used with old rides",
+                    "rate" => [
+                        "1" => "1 star",
+                        "2" => "2 stars",
+                        "3" => "3 stars",
+                        "4" => "4 stars",
+                        "5" => "5 stars",
+                    ]
+                ]
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            [
+                "This Function Rates The Latest Completed Passenger's Ride, It Can't be used with old rides",
+                "rate" => [
+                    "1" => "1 star",
+                    "2" => "2 stars",
+                    "3" => "3 stars",
+                    "4" => "4 stars",
+                    "5" => "5 stars",
+                ]
+            ]
+        );
+    }
+
     public function activities(Request $request){
         $userId = $request->user()->id;
         $activities = Ride::whereHas('offer.request', function($q) use ($userId) {

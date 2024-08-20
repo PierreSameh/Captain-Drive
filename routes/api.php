@@ -81,6 +81,7 @@ Route::post('/offer/user/reject-offer/{offer}', [RideController::class,'rejectOf
 Route::post('/ride/cancel-ride/user', [RideController::class, 'cancelRideByUser'])->middleware('auth:sanctum');
 Route::post('/ride/set-to-destination/user', [RideController::class, 'setToDestination'])->middleware('auth:sanctum');
 Route::get('/activities/rides/user', [RideController::class, 'activities'])->middleware('auth:sanctum');
+Route::post('/ride/review/user', [RideController::class, 'review'])->middleware('auth:sanctum');
 
 //OfferController
 #Driver
