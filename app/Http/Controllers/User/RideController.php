@@ -264,7 +264,7 @@ class RideController extends Controller
             $q->where('user_id', $userId);
         })
         ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
-        ->with(['offer.request'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
             return $this->handleResponse(
@@ -348,5 +348,32 @@ class RideController extends Controller
         );
     }
 
+    public function activities(Request $request){
+        $userId = $request->user()->id;
+        $activities = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })
+        ->where('status', 'completed')
+        ->with(['offer.request', 'offer.request.stops'])
+        ->paginate(20);
+        if(count($activities) > 0){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    $activities
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "You Have No Activities Yet",
+            [],
+            [],
+            []
+        );
+    }
 
 }

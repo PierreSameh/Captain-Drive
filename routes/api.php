@@ -80,6 +80,7 @@ Route::post('/offer/user/accept-offer/{offer}', [RideController::class,'acceptOf
 Route::post('/offer/user/reject-offer/{offer}', [RideController::class,'rejectOfferUser'])->middleware('auth:sanctum');
 Route::post('/ride/cancel-ride/user', [RideController::class, 'cancelRideByUser'])->middleware('auth:sanctum');
 Route::post('/ride/set-to-destination/user', [RideController::class, 'setToDestination'])->middleware('auth:sanctum');
+Route::get('/activities/rides/user', [RideController::class, 'activities'])->middleware('auth:sanctum');
 
 //OfferController
 #Driver
@@ -90,4 +91,7 @@ Route::post('/offer/driver/cancel-offer/{offer}', [OfferController::class,'cance
 Route::get('/ride/get-ride/driver', [OfferController::class, 'getRideDriver'])->middleware('auth:sanctum');
 Route::post('/ride/cancel-ride/driver', [OfferController::class, 'cancelRideByDriver'])->middleware('auth:sanctum');
 Route::post('/ride/set-arrived/driver', [OfferController::class, 'setArrived'])->middleware('auth:sanctum');
+Route::post('/ride/set-completed/driver', [OfferController::class, 'setCompleted'])->middleware('auth:sanctum');
+Route::get('/activities/rides/driver', [OfferController::class, 'activities'])->middleware('auth:sanctum');
+
 

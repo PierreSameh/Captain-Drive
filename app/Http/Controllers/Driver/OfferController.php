@@ -162,7 +162,7 @@ class OfferController extends Controller
             $q->where('driver_id', $driverId);
         })
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['offer.request'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
             return $this->handleResponse(
@@ -192,7 +192,7 @@ class OfferController extends Controller
             $q->where('driver_id', $driverId);
         })
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['offer.request'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
         $ride->status = "canceled_driver";
@@ -222,7 +222,7 @@ class OfferController extends Controller
             $q->where('driver_id', $driverId);
         })
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['offer.request'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
         $ride->status = "arrived";
@@ -240,6 +240,63 @@ class OfferController extends Controller
         return $this->handleResponse(
             false,
             "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
+    public function setCompleted(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['offer.request','offer.request.stops'])
+        ->first();
+        if($ride){
+        $ride->status = "completed";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "You Have Reached Your Destination, Have A Nice Day!",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
+
+    public function activities(Request $request){
+        $driverId = $request->user()->id;
+        $activities = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->where('status', 'completed')
+        ->with(['offer.request', 'offer.request.stops'])
+        ->paginate(20);
+        if(count($activities) > 0){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    $activities
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "You Have No Activities Yet",
             [],
             [],
             []
