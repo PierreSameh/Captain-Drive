@@ -26,7 +26,7 @@ class ReservationPController extends Controller
             "en_lng"=> ["required","string"],
             "en_lat"=> ["required","string"],
             "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
-            "time"=> ["required", "date_format:Y-m-d H:i:s"]
+            "time"=> "required|date_format:Y-m-d H:i:s",
         ]);
         
         if ($validator->fails()){
@@ -82,7 +82,7 @@ class ReservationPController extends Controller
             $withStops = ReservationRequest::where('id', $reservationRequest->id)->with('stops')->first();
             return $this->handleResponse(
                 true,
-                "Ride Request Sent Successfully",
+                "Reservation Request Sent Successfully",
                 [],
                 [
                     "Request" => $withStops,
@@ -96,6 +96,63 @@ class ReservationPController extends Controller
             [],
             [],
             ["Enter lng & lat data correctly"]
+        );
+    }
+
+    public function getForUserReservationRequest(Request $request) {
+        $user = $request->user();
+        $ride = ReservationRequest::where("user_id", $user->id)->with('stops')->latest()->limit(1)->get();
+        if ($ride){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "reqeust"=> $ride
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "No Reservation Reqeusts Found",
+            [],
+            [],
+            []
+            );
+    }
+
+    public function cancelReservationRequest(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "reservation_request_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $ride = ReservationRequest::findOrFail($request->reservation_request_id);
+        if (isset($ride)) {
+            $ride->status = "canceled";
+            $ride->save();
+            return $this->handleResponse(
+                true,
+                "Reservation Cancelled",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Can't Find The Reservation",
+            [],
+            [],
+            []
         );
     }
 }

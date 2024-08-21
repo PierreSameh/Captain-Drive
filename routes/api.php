@@ -10,6 +10,7 @@ use App\Http\Controllers\Driver\WalletController;
 use App\Http\Controllers\User\RideController;
 use App\Http\Controllers\Driver\OfferController;
 use App\Http\Controllers\User\ReservationPController;
+use App\Http\Controllers\Driver\ReservationDController;
  
 
 
@@ -98,3 +99,13 @@ Route::get('/activities/rides/driver', [OfferController::class, 'activities'])->
 
 //Reservation Passenger
 Route::post('/reservation-request', [ReservationPController::class, 'sendReservationRequest'])->middleware('auth:sanctum');
+Route::get('/reservation/get-reservation', [ReservationPController::class,'getForUserReservationRequest'])->middleware('auth:sanctum');
+Route::post('/reservation/cancel-reservation', [ReservationPController::class,'cancelReservationRequest'])->middleware('auth:sanctum');
+
+//Reservation Driver
+Route::get('/reservation/driver/show-near-reservations', [ReservationDController::class, 'showNearReservations'])->middleware('auth:sanctum,driver');
+Route::post('/reservation/driver/make-reservation-offer', [ReservationDController::class,'makeReservationOffer'])->middleware('auth:sanctum,driver');
+Route::get('/reservation/driver/get-reservation/offers', [ReservationDController::class,'getReservationOffer'])->middleware('auth:sanctum,driver');
+Route::post('/reservation/driver/cancel-reservaton-offer', [ReservationDController::class,'cancelReservationOffer'])->middleware('auth:sanctum,driver');
+
+
