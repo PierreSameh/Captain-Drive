@@ -41,6 +41,10 @@ class User extends Authenticatable
     public function riderequest() {
         return $this->hasMany(RideRequest::class);
     }
+
+    public function reservationRequests(){
+        return $this->hasMany(ReservationRequest::class);
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

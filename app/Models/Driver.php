@@ -57,6 +57,10 @@ class Driver extends Authenticatable
         return $this->hasOne(RejectMessage::class);
     }
 
+    public function reservationOffers(){
+        return $this->hasMany(ReservationOffer::class);
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
