@@ -125,7 +125,8 @@ class RideController extends Controller
     public function cancelRideRequest(Request $request, $rideID) {
         $ride = RideRequest::findOrFail($rideID);
         if (isset($ride)) {
-            $ride->delete();
+            $ride->status = "canceled";
+            $ride->save();
             return $this->handleResponse(
                 true,
                 "Ride Cancelled",
@@ -149,7 +150,9 @@ class RideController extends Controller
         ->where("status", "pending")
         ->first();
         if (isset($rideRequest)) {
-            $offers = Offer::where('request_id', $rideRequest->id)->get();
+            $offers = Offer::where('request_id', $rideRequest->id)
+            ->whereNot('status', 'canceled')
+            ->get();
             if(count($offers) > 0) {
             return $this->handleResponse(
                 true,
@@ -181,6 +184,15 @@ class RideController extends Controller
     public function getOfferUser($offerId) {
         $offer = Offer::with('request')->where('id', $offerId)->first();
         if (isset($offer)) {
+            if($offer->status == "canceled"){
+                return $this->handleResponse(
+                    false,
+                    "Driver Canceled The Offer",
+                    [],
+                    [],
+                    []
+                );
+            }
             return $this->handleResponse(
                 true,
                 'Offer',
@@ -192,8 +204,8 @@ class RideController extends Controller
                 );
             }
             return $this->handleResponse(
-                false,
-                'No Offers',
+                true,
+                'Offer Has Been Canceled',
                 [],
                 [],
                 []
@@ -271,6 +283,16 @@ class RideController extends Controller
         ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
+            $canceled = $ride->where('status', 'canceled_driver');
+            if($canceled){
+                return $this->handleResponse(
+                    false,
+                    "Driver Canceled The Ride",
+                    [],
+                    [],
+                    []
+                );
+            }
             return $this->handleResponse(
                 true,
                 "",
@@ -304,7 +326,7 @@ class RideController extends Controller
         $ride->status = "canceled_user";
         $ride->save();
         return $this->handleResponse(
-            true,
+            false,
             "Ride Request Canceled",
             [],
             [

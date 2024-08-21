@@ -75,7 +75,18 @@ class OfferController extends Controller
         $driver = $request->user();
         $exists = Offer::where("driver_id", $driver->id)
         ->where("request_id", $requestId)
+        ->whereNot("status", "canceled")
         ->first();
+        $canceled = RideRequest::where('id', $requestId)->where('status', 'canceled')->first();
+        if($canceled){
+            return $this->handleResponse(
+                false,
+                "Passenger Canceled Ride Request",
+                [],
+                [],
+                []
+            );
+        }
         if (isset($exists)) {
             return $this->handleResponse(
                 false,
@@ -113,20 +124,25 @@ class OfferController extends Controller
 
     public function getOfferDriver(Request $request) {
         $driver = $request->user();
-        $offer = Offer::where("driver_id", $driver->id)->where('status', "pending")->first();
-        if (isset($offer)) {
+        $offers = Offer::with('request')
+        ->whereHas('request', function($q) {
+            $q->where('status', 'pending');
+        })
+        ->where("driver_id", $driver->id)->where('status', "pending")
+        ->get();
+        if (count($offers) > 0) {
             return $this->handleResponse(
                 true,
-                "Your Placed Offer",
+                "Your Placed Offers",
                 [],
                 [
-                    "offer"=> $offer
+                    "offers"=> $offers
                 ],
                 []
                 );
             }
             return $this->handleResponse(
-                false,
+                true,
                 "No Placed Offers",
                 [],
                 [],
@@ -139,7 +155,8 @@ class OfferController extends Controller
         $lastOffer = Offer::where("driver_id", $driver->id)
         ->where("id", $offerId)->first();
         if (isset($lastOffer)) {
-            $lastOffer->delete();
+            $lastOffer->status = 'canceled';
+            $lastOffer->save();
             return $this->handleResponse(
                 true,
                 "Offer Canceled",
@@ -162,10 +179,19 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_driver'])
         ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
+            if($ride->status == 'canceled_user'){
+                return $this->handleResponse(
+                    false,
+                    "Passenger Canceled The Ride",
+                    [],
+                    [],
+                    []
+                );
+            }
             return $this->handleResponse(
                 true,
                 "",
