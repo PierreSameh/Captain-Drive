@@ -9,6 +9,7 @@ use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Driver\WalletController;
 use App\Http\Controllers\User\RideController;
 use App\Http\Controllers\Driver\OfferController;
+use App\Http\Controllers\User\ReservationPController;
  
 
 
@@ -95,4 +96,5 @@ Route::post('/ride/set-arrived/driver', [OfferController::class, 'setArrived'])-
 Route::post('/ride/set-completed/driver', [OfferController::class, 'setCompleted'])->middleware('auth:sanctum');
 Route::get('/activities/rides/driver', [OfferController::class, 'activities'])->middleware('auth:sanctum');
 
-
+//Reservation Passenger
+Route::post('/reservation-request', [ReservationPController::class, 'sendReservationRequest'])->middleware('auth:sanctum');
