@@ -59,9 +59,10 @@ class OfferController extends Controller
         );
     }
     
-    public function makeOffer(Request $request, $requestId){
+    public function makeOffer(Request $request){
         $validator = Validator::make($request->all(), [
             "price"=> ["required", "numeric"],
+            "ride_request_id"=> 'required'
         ]);
         if ($validator->fails()) {
             return $this->handleResponse(
@@ -74,10 +75,10 @@ class OfferController extends Controller
         }
         $driver = $request->user();
         $exists = Offer::where("driver_id", $driver->id)
-        ->where("request_id", $requestId)
+        ->where("request_id", $request->ride_request_id)
         ->whereNot("status", "canceled")
         ->first();
-        $canceled = RideRequest::where('id', $requestId)->where('status', 'canceled')->first();
+        $canceled = RideRequest::where('id', $request->ride_request_id)->where('status', 'canceled')->first();
         if($canceled){
             return $this->handleResponse(
                 false,
@@ -96,7 +97,7 @@ class OfferController extends Controller
                 []
             );
         }
-        $rideRequest = RideRequest::find($requestId);
+        $rideRequest = RideRequest::find($request->ride_request_id);
         if ($rideRequest){
             $offer = new Offer();
             $offer->driver_id = $driver->id;
@@ -150,10 +151,21 @@ class OfferController extends Controller
             );
     }
 
-    public function cancelOffer(Request $request, $offerId) {
-        $driver = $request->user();
+    public function cancelOffer(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }        $driver = $request->user();
         $lastOffer = Offer::where("driver_id", $driver->id)
-        ->where("id", $offerId)->first();
+        ->where("id", $request->offer_id)->first();
         if (isset($lastOffer)) {
             $lastOffer->status = 'canceled';
             $lastOffer->save();

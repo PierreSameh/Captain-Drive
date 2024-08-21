@@ -683,8 +683,20 @@ class DriverController extends Controller
         
     }
 
-    public function getDriverForAdmin($driverId) {
-        $driver = Driver::with('driverdocs', 'vehicle')->find($driverId);
+    public function getDriverForAdmin(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "driver_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $driver = Driver::with('driverdocs', 'vehicle')->find($request->driver_id);
         if ($driver) {
             return $this->handleResponse(
                 true,
@@ -727,8 +739,20 @@ class DriverController extends Controller
             );
     }
 
-    public function approveDriver($driverId) {
-        $driver = Driver::with("driverdocs")->find($driverId);
+    public function approveDriver(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "driver_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $driver = Driver::with("driverdocs")->find($request->driver_id);
         if ($driver) {
             $driver->is_approved = 1;
             $driver->save();
@@ -751,8 +775,20 @@ class DriverController extends Controller
             );
     }
 
-    public function rejectDriver(Request $request, $driverId) {
-        $driver = Driver::find($driverId);
+    public function rejectDriver(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "driver_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }   
+        $driver = Driver::find($request->driver_id);
         if ($driver) {
             $validator = Validator::make($request->all(), [
                 "reasons"=> ["string", "max:1000"]
@@ -769,7 +805,7 @@ class DriverController extends Controller
             $driver->is_approved = -1;
             $driver->save();
             $reject = new RejectMessage();
-            $reject->driver_id = $driverId;
+            $reject->driver_id = $request->driver_id;
             $reject->reasons = $request->reasons;
             $reject->save();
             return $this->handleResponse(

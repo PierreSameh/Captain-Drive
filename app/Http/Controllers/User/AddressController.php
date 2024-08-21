@@ -61,8 +61,9 @@ class AddressController extends Controller
         }
     }
 
-    public function updateAddress(Request $request, $addressID) {
+    public function updateAddress(Request $request) {
         $validator = Validator::make($request->all(), [
+            "address_id" => ["required"],
             "country"=> ["required", "string", "max:255"],
             "city"=> ["required", "string","max:255"],
             "address"=> ["required", "string","max:255"]
@@ -76,7 +77,7 @@ class AddressController extends Controller
                 []
             );
         }
-        $address = Address::where("id", $addressID)->first();
+        $address = Address::where("id", $request->address_id)->first();
         $user = User::where("id", $address->user_id)->first();
         if ($address) {
             $address->country = $request->country;
@@ -143,9 +144,21 @@ class AddressController extends Controller
             );
     }
 
-    public function getAddress(Request $request, $addressID) {
+    public function getAddress(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "address_id"=> ['required']
+        ]);
+        if ($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
         $user = $request->user();
-        $address = Address::where("id", $addressID)->first();
+        $address = Address::where("id", $request->address_id)->first();
         if (isset($address)) {
             return $this->handleResponse(
                 true,
@@ -164,9 +177,20 @@ class AddressController extends Controller
             );
     }
 
-    public function deleteAddress($addressID) {
-    
-        $address = Address::where('id', $addressID);
+    public function deleteAddress(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "address_id" => ['required'],
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $address = Address::where('id', $request->address_id);
         if (isset($address)) {
         $address->delete();
 

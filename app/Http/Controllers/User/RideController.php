@@ -122,8 +122,20 @@ class RideController extends Controller
             );
     }
 
-    public function cancelRideRequest(Request $request, $rideID) {
-        $ride = RideRequest::findOrFail($rideID);
+    public function cancelRideRequest(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "ride_request_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $ride = RideRequest::findOrFail($request->ride_request_id);
         if (isset($ride)) {
             $ride->status = "canceled";
             $ride->save();
@@ -181,8 +193,20 @@ class RideController extends Controller
             );
     }
 
-    public function getOfferUser($offerId) {
-        $offer = Offer::with('request')->where('id', $offerId)->first();
+    public function getOfferUser(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $offer = Offer::with('request')->where('id', $request->offer_id)->first();
         if (isset($offer)) {
             if($offer->status == "canceled"){
                 return $this->handleResponse(
@@ -212,9 +236,21 @@ class RideController extends Controller
             );
     }
 
-    public function acceptOfferUser(Request $request, $offerId){
+    public function acceptOfferUser(Request $request){
+        $validator = Validator::make($request->all(), [
+            "offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
         $user = $request->user();
-        $offer = Offer::where('id', $offerId)->first();
+        $offer = Offer::where('id', $request->offer_id)->first();
         $rideRequest = RideRequest::where('id', $offer->request_id)->first();
         if (isset($offer)) {
             $rideRequest->status = "closed";
@@ -247,9 +283,21 @@ class RideController extends Controller
             );
 
     }
-    public function rejectOfferUser(Request $request, $offerId){
+    public function rejectOfferUser(Request $request){
+        $validator = Validator::make($request->all(), [
+            "offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
         $user = $request->user();
-        $offer = Offer::where('id', $offerId)->first();
+        $offer = Offer::where('id', $request->offer_id)->first();
         if (isset($offer)) {
             $offer->status = "rejected";
             $offer->save();
