@@ -242,4 +242,45 @@ class ReservationPController extends Controller
             );
 
     }
+
+    public function rejectReservationOffer(Request $request){
+        $validator = Validator::make($request->all(), [
+            "reservation_offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $user = $request->user();
+        $offer = ReservationOffer::where('id', $request->reservation_offer_id)
+        ->where('status', 'pending')
+        ->first();
+        if (isset($offer)) {
+            $offer->status = "rejected";
+            $offer->save();
+
+            return $this->handleResponse(
+                true,
+                "Reservation Offer Rejected",
+                [],
+                [
+                    "offer" => $offer,
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "Offer Not Found",
+                [],
+                [],
+                []
+            );
+
+    }
 }

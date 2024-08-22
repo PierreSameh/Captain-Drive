@@ -305,7 +305,7 @@ class RideController extends Controller
 
             return $this->handleResponse(
                 true,
-                "Offer Accepted",
+                "Offer Rejected",
                 [],
                 [
                     "offer" => $offer,
