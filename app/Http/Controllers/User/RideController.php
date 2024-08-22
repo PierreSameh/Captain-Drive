@@ -164,6 +164,7 @@ class RideController extends Controller
         if (isset($rideRequest)) {
             $offers = Offer::where('request_id', $rideRequest->id)
             ->whereNot('status', 'canceled')
+            ->with('driver')
             ->get();
             if(count($offers) > 0) {
             return $this->handleResponse(
@@ -206,7 +207,7 @@ class RideController extends Controller
                 []
             );
         }
-        $offer = Offer::with('request')->where('id', $request->offer_id)->first();
+        $offer = Offer::with('request')->where('id', $request->offer_id)->with('driver')->first();
         if (isset($offer)) {
             if($offer->status == "canceled"){
                 return $this->handleResponse(
@@ -250,7 +251,7 @@ class RideController extends Controller
             );
         }
         $user = $request->user();
-        $offer = Offer::where('id', $request->offer_id)->first();
+        $offer = Offer::where('id', $request->offer_id)->with('driver')->first();
         $rideRequest = RideRequest::where('id', $offer->request_id)->first();
         if (isset($offer)) {
             $rideRequest->status = "closed";
@@ -328,7 +329,7 @@ class RideController extends Controller
             $q->where('user_id', $userId);
         })
         ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
-        ->with(['offer.request', 'offer.request.stops'])
+        ->with(['offer.request', 'offer.request.stops', 'offer.driver'])
         ->first();
         if($ride){
             $canceled = $ride->where('status', 'canceled_driver');

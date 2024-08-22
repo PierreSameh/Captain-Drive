@@ -101,6 +101,8 @@ Route::get('/activities/rides/driver', [OfferController::class, 'activities'])->
 Route::post('/reservation-request', [ReservationPController::class, 'sendReservationRequest'])->middleware('auth:sanctum');
 Route::get('/reservation/get-reservation', [ReservationPController::class,'getForUserReservationRequest'])->middleware('auth:sanctum');
 Route::post('/reservation/cancel-reservation', [ReservationPController::class,'cancelReservationRequest'])->middleware('auth:sanctum');
+Route::get('/reservation/all/reservation-offers', [ReservationPController::class,'getAllReservationOffers'])->middleware('auth:sanctum');
+Route::post('/reservation/accept-offer', [ReservationPController::class,'acceptReservationOffer'])->middleware('auth:sanctum');
 
 //Reservation Driver
 Route::get('/reservation/driver/show-near-reservations', [ReservationDController::class, 'showNearReservations'])->middleware('auth:sanctum,driver');

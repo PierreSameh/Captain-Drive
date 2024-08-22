@@ -10,6 +10,8 @@ use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\ReservationRequest;
 use App\Models\ReservationStop;
+use App\Models\ReservationOffer;
+use App\Models\Reservation;
 
 
 class ReservationPController extends Controller
@@ -154,5 +156,90 @@ class ReservationPController extends Controller
             [],
             []
         );
+    }
+
+    public function getAllReservationOffers(Request $request) {
+        $user = $request->user();
+        $rideRequest = ReservationRequest::where("user_id", $user->id)
+        ->where("status", "pending")
+        ->first();
+        if (isset($rideRequest)) {
+            $offers = ReservationOffer::where('reservation_request_id', $rideRequest->id)
+            ->whereNot('status', 'canceled')
+            ->with('driver')
+            ->get();
+            if(count($offers) > 0) {
+            return $this->handleResponse(
+                true,
+                "Reservation Offers",
+                [],
+                [
+                    "offers" => $offers
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                true,
+                "No Offers",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "Request Not Available",
+            [],
+            [],
+            []
+            );
+    }
+
+    public function acceptReservationOffer(Request $request){
+        $validator = Validator::make($request->all(), [
+            "reservation_offer_id"=> 'required'
+        ]);
+        if($validator->fails()){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $offer = ReservationOffer::where('id', $request->reservation_offer_id)->first();
+        $rideRequest = ReservationRequest::where('id', $offer->reservation_request_id)->first();
+        if (isset($offer)) {
+            $rideRequest->status = "closed";
+            $rideRequest->save();
+
+            $offer->status = "accepted";
+            $offer->save();
+
+            Reservation::create([
+                "reservation_offer_id" => $offer->id,
+            ]);
+
+            return $this->handleResponse(
+                true,
+                "Reservation Offer Accepted",
+                [],
+                [
+                    "reservation_offer" => $offer,
+                    "reservation_request" => $rideRequest
+                ],
+                []
+                );
+            }
+            return $this->handleResponse(
+                false,
+                "Offer Not Found",
+                [],
+                [],
+                []
+            );
+
     }
 }
