@@ -193,7 +193,7 @@ class OfferController extends Controller
         })
         ->whereNotIn('status', ['completed', 'canceled_driver'])
         ->with(['offer.request', 'offer.request.stops'])
-        ->first();
+        ->latest()->first();
         if($ride){
             if($ride->status == 'canceled_user'){
                 return $this->handleResponse(

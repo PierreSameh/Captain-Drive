@@ -163,7 +163,7 @@ class RideController extends Controller
         ->first();
         if (isset($rideRequest)) {
             $offers = Offer::where('request_id', $rideRequest->id)
-            ->whereNot('status', 'canceled')
+            ->whereNotIn('status', ['canceled', 'rejected'])
             ->with('driver')
             ->get();
             if(count($offers) > 0) {
@@ -328,12 +328,11 @@ class RideController extends Controller
         $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
             $q->where('user_id', $userId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
+        ->whereNotIn('status', ['completed', 'canceled_user'])
         ->with(['offer.request', 'offer.request.stops', 'offer.driver'])
-        ->first();
+        ->latest()->first();
         if($ride){
-            $canceled = $ride->where('status', 'canceled_driver');
-            if($canceled){
+            if($ride->status == 'canceled_driver'){
                 return $this->handleResponse(
                     false,
                     "Driver Canceled The Ride",
@@ -368,15 +367,15 @@ class RideController extends Controller
         $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
             $q->where('user_id', $userId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
-        ->with(['offer.request'])
-        ->first();
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['offer.request', 'offer.driver'])
+        ->latest()->first();
         if($ride){
         $ride->status = "canceled_user";
         $ride->save();
         return $this->handleResponse(
             false,
-            "Ride Request Canceled",
+            "Ride Canceled",
             [],
             [
                 "ride" => $ride
@@ -399,7 +398,7 @@ class RideController extends Controller
         })
         ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
         ->where('status', 'arrived')
-        ->with(['offer.request'])
+        ->with(['offer.request', 'offer.driver'])
         ->first();
         if($ride){
         $ride->status = "to_destination";
