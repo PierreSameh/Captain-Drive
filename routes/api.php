@@ -112,5 +112,7 @@ Route::get('/reservation/driver/show-near-reservations', [ReservationDController
 Route::post('/reservation/driver/make-reservation-offer', [ReservationDController::class,'makeReservationOffer'])->middleware('auth:sanctum,driver');
 Route::get('/reservation/driver/get-reservation/offers', [ReservationDController::class,'getReservationOffer'])->middleware('auth:sanctum,driver');
 Route::post('/reservation/driver/cancel-reservaton-offer', [ReservationDController::class,'cancelReservationOffer'])->middleware('auth:sanctum,driver');
+Route::get('/reservation/driver/get', [ReservationDController::class, 'getReservation'])->middleware('auth:sanctum,driver');
+Route::post('/reservation/driver/cancel', [ReservationDController::class, 'cancelReservation'])->middleware('auth:sanctum,driver');
 
 

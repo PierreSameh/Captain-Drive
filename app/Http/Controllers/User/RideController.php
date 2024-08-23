@@ -374,7 +374,7 @@ class RideController extends Controller
         $ride->status = "canceled_user";
         $ride->save();
         return $this->handleResponse(
-            false,
+            true,
             "Ride Canceled",
             [],
             [

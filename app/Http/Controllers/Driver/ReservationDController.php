@@ -12,6 +12,8 @@ use App\Models\Ride;
 use App\Models\Wallet;
 use App\Models\ReservationRequest;
 use App\Models\ReservationOffer;
+use App\Models\ReservationStop;
+use App\Models\Reservation;
 
 class ReservationDController extends Controller
 {
@@ -40,7 +42,7 @@ class ReservationDController extends Controller
             "",
             [],
             [
-                "requests" => $requests
+                "reservation_requests" => $requests
             ],
             []
         );
@@ -120,7 +122,7 @@ class ReservationDController extends Controller
 
     public function getReservationOffer(Request $request) {
         $driver = $request->user();
-        $offers = ReservationOffer::with('reservationRequest')
+        $offers = ReservationOffer::with('reservationRequest', 'reservationRequest.stops')
         ->whereHas('reservationRequest', function($q) {
             $q->where('status', 'pending');
         })
@@ -178,6 +180,73 @@ class ReservationDController extends Controller
             [],
             [],
             []
+        );
+    }
+
+    public function getReservation(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Reservation::whereHas('reservationOffer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_driver'])
+        ->with(['reservationOffer.reservationRequest', 'reservationOffer.reservationRequest.stops'])
+        ->latest()->first();
+        if($ride){
+            if($ride->status == 'canceled_user'){
+                return $this->handleResponse(
+                    false,
+                    "Passenger Canceled The Reservation",
+                    [],
+                    [],
+                    []
+                );
+            }
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "reservation" => $ride
+                ],
+                []
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "No Active Reservations",
+            [],
+            [],
+            []
+        );
+        
+        
+    }
+
+    public function cancelReservation(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Reservation::where('id', $request->reservation_id)
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['reservationOffer.reservationRequest', 'reservationOffer.reservationRequest.stops'])
+        ->first();
+        if($ride){
+        $ride->status = "canceled_driver";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Reservation Canceled",
+            [],
+            [
+                "reservation" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Reservation Not Found",
+            [],
+            [],
+            ['Enter Reservation ID Correctly']
         );
     }
 }

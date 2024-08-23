@@ -125,7 +125,7 @@ class OfferController extends Controller
 
     public function getOfferDriver(Request $request) {
         $driver = $request->user();
-        $offers = Offer::with('request')
+        $offers = Offer::with('request', 'request.stops')
         ->whereHas('request', function($q) {
             $q->where('status', 'pending');
         })

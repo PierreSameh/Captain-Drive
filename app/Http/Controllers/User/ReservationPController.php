@@ -87,7 +87,7 @@ class ReservationPController extends Controller
                 "Reservation Request Sent Successfully",
                 [],
                 [
-                    "Request" => $withStops,
+                    "reservation_request" => $withStops,
                 ],
                 []
             );
@@ -181,7 +181,7 @@ class ReservationPController extends Controller
             }
             return $this->handleResponse(
                 true,
-                "No Offers",
+                "No Reservation Offers",
                 [],
                 [],
                 []
@@ -189,7 +189,7 @@ class ReservationPController extends Controller
         }
         return $this->handleResponse(
             false,
-            "Request Not Available",
+            "Reservation Request Not Available",
             [],
             [],
             []
@@ -235,7 +235,7 @@ class ReservationPController extends Controller
             }
             return $this->handleResponse(
                 false,
-                "Offer Not Found",
+                "Reservation Offer Not Found",
                 [],
                 [],
                 []
@@ -276,7 +276,7 @@ class ReservationPController extends Controller
             }
             return $this->handleResponse(
                 false,
-                "Offer Not Found",
+                "Reservation Offer Not Found",
                 [],
                 [],
                 []
@@ -314,7 +314,7 @@ class ReservationPController extends Controller
         }
         return $this->handleResponse(
             true,
-            "No Active Rides",
+            "No Active Reservations",
             [],
             [],
             []
@@ -335,18 +335,18 @@ class ReservationPController extends Controller
         $ride->status = "canceled_user";
         $ride->save();
         return $this->handleResponse(
-            false,
+            true,
             "Reservation Canceled",
             [],
             [
-                "ride" => $ride
+                "reservation" => $ride
             ],
             []
         );
         }
         return $this->handleResponse(
             false,
-            "Ride Not Found",
+            "Reservation Not Found",
             [],
             [],
             []
