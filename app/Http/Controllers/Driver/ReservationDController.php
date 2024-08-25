@@ -250,4 +250,73 @@ class ReservationDController extends Controller
             ['Enter Reservation ID Correctly']
         );
     }
+
+    public function setArriving(Request $request){
+        $validator = Validator::make($request->all(), [
+            'ride_id'=> 'required',
+        ]);
+        if( $validator->fails() ){
+            return $this->handleResponse(
+                false,
+                "",
+                [$validator->errors()->first()],
+                [],
+                []
+            );
+        }
+        $ride = Ride::where('id', $request->ride_id)
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['offer.request', 'offer.request.stops'])
+        ->first();
+        if($ride){
+        $ride->status = "arriving";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Driver is arriving",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
+
+    public function setArrived(Request $request){
+        $driverId = $request->user()->id;
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
+            $q->where('driver_id', $driverId);
+        })
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->with(['offer.request', 'offer.request.stops'])
+        ->latest()->first();
+        if($ride){
+        $ride->status = "arrived";
+        $ride->save();
+        return $this->handleResponse(
+            true,
+            "Driver Arrived! Enjoy Your Trip",
+            [],
+            [
+                "ride" => $ride
+            ],
+            []
+        );
+        }
+        return $this->handleResponse(
+            false,
+            "Ride Not Found",
+            [],
+            [],
+            []
+        );
+    }
 }
