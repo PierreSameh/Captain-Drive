@@ -19,6 +19,8 @@ class RideRequest extends Model
         "en_lng",
         "en_lat",
         "status",
+        "type",
+        "time"
     ];
 
     public function user(){

@@ -11,8 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('reservation_requests', function (Blueprint $table) {
-            $table->date('time');
+        Schema::table('ride_requests', function (Blueprint $table) {
+            $table->string('type')->default('ride');
+            $table->dateTime('time')->nullable();
         });
     }
 
@@ -21,7 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('reservation_requests', function (Blueprint $table) {
+        Schema::table('ride_requests', function (Blueprint $table) {
+            $table->dropColumn('type');
             $table->dropColumn('time');
         });
     }

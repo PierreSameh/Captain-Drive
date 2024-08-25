@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
-use App\Models\ReservationRequest;
-use App\Models\ReservationStop;
-use App\Models\ReservationOffer;
-use App\Models\Reservation;
+use App\Models\RideRequest;
+use App\Models\RideRequestStop;
+use App\Models\Offer;
+use App\Models\Ride;
+
 
 
 class ReservationPController extends Controller
@@ -56,7 +57,7 @@ class ReservationPController extends Controller
         $en_lng = $request->en_lng;
         $en_lat = $request->en_lat;
         if ($user && $st_lng && $st_lat && $en_lng && $en_lat){
-            $reservationRequest = ReservationRequest::create([
+            $reservationRequest = RideRequest::create([
                 "user_id"=> $user->id,
                 "vehicle"=> $request->vehicle,
                 "st_location"=> $request->st_location,
@@ -65,14 +66,15 @@ class ReservationPController extends Controller
                 "st_lat"=> $st_lat,
                 "en_lng"=> $en_lng,
                 "en_lat"=> $en_lat,
+                "type"=> "reservation",
                 "time"=> $request->time
             ]);
             $stopLocations = [];
         if ($request->has("stop_locations")) {
             foreach ($request->stop_locations as $stop_location) {
     
-                $stop = ReservationStop::create([
-                    "reservation_request_id"=> $reservationRequest->id,
+                $stop = RideRequestStop::create([
+                    "ride_request_id"=> $reservationRequest->id,
                     'stop_location' => $stop_location['stop_location'],
                     'lng' => $stop_location['lng'],
                     'lat'=> $stop_location['lat']
@@ -81,7 +83,7 @@ class ReservationPController extends Controller
                 $stopLocations[] = $stop;
             } 
         }
-            $withStops = ReservationRequest::where('id', $reservationRequest->id)->with('stops')->first();
+            $withStops = RideRequest::where('id', $reservationRequest->id)->with('stops')->first();
             return $this->handleResponse(
                 true,
                 "Reservation Request Sent Successfully",
@@ -103,7 +105,9 @@ class ReservationPController extends Controller
 
     public function getForUserReservationRequest(Request $request) {
         $user = $request->user();
-        $ride = ReservationRequest::where("user_id", $user->id)->with('stops')->latest()->limit(1)->get();
+        $ride = RideRequest::where("user_id", $user->id)
+        ->where('type', 'reservation')
+        ->with('stops')->latest()->first();
         if ($ride){
             return $this->handleResponse(
                 true,
@@ -137,7 +141,7 @@ class ReservationPController extends Controller
                 []
             );
         }
-        $ride = ReservationRequest::findOrFail($request->reservation_request_id);
+        $ride = RideRequest::findOrFail($request->reservation_request_id);
         if (isset($ride)) {
             $ride->status = "canceled";
             $ride->save();
@@ -160,11 +164,12 @@ class ReservationPController extends Controller
 
     public function getAllReservationOffers(Request $request) {
         $user = $request->user();
-        $rideRequest = ReservationRequest::where("user_id", $user->id)
+        $rideRequest = RideRequest::where("user_id", $user->id)
         ->where("status", "pending")
-        ->first();
+        ->where('type', 'reservation')
+        ->latest()->first();
         if (isset($rideRequest)) {
-            $offers = ReservationOffer::where('reservation_request_id', $rideRequest->id)
+            $offers = Offer::where('request_id', $rideRequest->id)
             ->whereNotIn('status', ['canceled', 'rejected'])
             ->with('driver')
             ->get();
@@ -197,6 +202,7 @@ class ReservationPController extends Controller
     }
 
     public function acceptReservationOffer(Request $request){
+        try{
         $validator = Validator::make($request->all(), [
             "reservation_offer_id"=> 'required'
         ]);
@@ -209,8 +215,8 @@ class ReservationPController extends Controller
                 []
             );
         }
-        $offer = ReservationOffer::where('id', $request->reservation_offer_id)->first();
-        $rideRequest = ReservationRequest::where('id', $offer->reservation_request_id)->first();
+        $offer = Offer::where('id', $request->reservation_offer_id)->first();
+        $rideRequest = RideRequest::where('id', $offer->request_id)->first();
         if (isset($offer)) {
             $rideRequest->status = "closed";
             $rideRequest->save();
@@ -218,8 +224,9 @@ class ReservationPController extends Controller
             $offer->status = "accepted";
             $offer->save();
 
-            Reservation::create([
-                "reservation_offer_id" => $offer->id,
+            Ride::create([
+                "offer_id" => $offer->id,
+                "status"=> "waiting"
             ]);
 
             return $this->handleResponse(
@@ -233,14 +240,15 @@ class ReservationPController extends Controller
                 []
                 );
             }
+        }catch(\Exception $e){
             return $this->handleResponse(
                 false,
                 "Reservation Offer Not Found",
-                [],
+                [$e->getMessage()],
                 [],
                 []
             );
-
+        }
     }
 
     public function rejectReservationOffer(Request $request){
@@ -257,7 +265,7 @@ class ReservationPController extends Controller
             );
         }
         $user = $request->user();
-        $offer = ReservationOffer::where('id', $request->reservation_offer_id)
+        $offer = Offer::where('id', $request->reservation_offer_id)
         ->where('status', 'pending')
         ->first();
         if (isset($offer)) {
@@ -286,11 +294,11 @@ class ReservationPController extends Controller
 
     public function getReservation(Request $request){
         $userId = $request->user()->id;
-        $ride = Reservation::whereHas('reservationOffer.reservationRequest', function($q) use ($userId) {
-            $q->where('user_id', $userId);
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId)->where('type', 'resevation');
         })
         ->whereNotIn('status', ['completed', 'canceled_user'])
-        ->with(['reservationOffer.reservationRequest', 'reservationOffer.reservationRequest.stops', 'reservationOffer.driver'])
+        ->with(['offer.request', 'offer.request.stops', 'offer.driver'])
         ->latest()->first();
         if($ride){
             if($ride->status == 'canceled_driver'){
@@ -325,11 +333,11 @@ class ReservationPController extends Controller
 
     public function cancelReservation(Request $request){
         $userId = $request->user()->id;
-        $ride = Reservation::whereHas('reservationOffer.reservationRequest', function($q) use ($userId) {
-            $q->where('user_id', $userId);
+        $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
+            $q->where('user_id', $userId)->where('type', 'reservation');
         })
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['reservationOffer.reservationRequest', 'reservationOffer.driver'])
+        ->with(['offer.request', 'offer.driver'])
         ->latest()->first();
         if($ride){
         $ride->status = "canceled_user";

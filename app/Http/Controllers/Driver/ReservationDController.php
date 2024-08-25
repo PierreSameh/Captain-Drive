@@ -8,12 +8,12 @@ use Illuminate\Support\Facades\Validator;
 use App\HandleTrait;
 use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
-use App\Models\Ride;
 use App\Models\Wallet;
-use App\Models\ReservationRequest;
-use App\Models\ReservationOffer;
-use App\Models\ReservationStop;
-use App\Models\Reservation;
+use App\Models\RideRequest;
+use App\Models\RideRequestStop;
+use App\Models\Offer;
+use App\Models\Ride;
+
 
 class ReservationDController extends Controller
 {
@@ -23,17 +23,18 @@ class ReservationDController extends Controller
         $driver = $request->user();
         $radius = 6371; // Earth's radius in kilometers
         $vehicle = Vehicle::where('driver_id', $driver->id)->first();
-        $requests = ReservationRequest::select('reservation_requests.*', DB::raw("
+        $requests = RideRequest::select('ride_requests.*', DB::raw("
                 ($radius * acos(cos(radians(?)) 
-                * cos(radians(reservation_requests.st_lat)) 
-                * cos(radians(reservation_requests.st_lng) - radians(?)) 
+                * cos(radians(ride_requests.st_lat)) 
+                * cos(radians(ride_requests.st_lng) - radians(?)) 
                 + sin(radians(?)) 
-                * sin(radians(reservation_requests.st_lat)))) AS distance"))
+                * sin(radians(ride_requests.st_lat)))) AS distance"))
             ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
             ->having('distance', '<', 10)
             ->orderBy('distance', 'asc')
             ->where('vehicle', $vehicle->type)
             ->where('status', "pending")
+            ->where('type', 'reservation')
             ->with('stops') // Eager load the 'stops' relationship
             ->get();
         if (count( $requests ) > 0) {
@@ -71,11 +72,11 @@ class ReservationDController extends Controller
             );
         }
         $driver = $request->user();
-        $exists = ReservationOffer::where("driver_id", $driver->id)
-        ->where("reservation_request_id", $request->reservation_request_id)
+        $exists = Offer::where("driver_id", $driver->id)
+        ->where("request_id", $request->reservation_request_id)
         ->whereNot("status", "canceled")
         ->first();
-        $canceled = ReservationRequest::where('id', $request->reservation_request_id)->where('status', 'canceled')->first();
+        $canceled = RideRequest::where('id', $request->reservation_request_id)->where('status', 'canceled')->first();
         if($canceled){
             return $this->handleResponse(
                 false,
@@ -94,11 +95,11 @@ class ReservationDController extends Controller
                 []
             );
         }
-        $rideRequest = ReservationRequest::find($request->reservation_request_id);
+        $rideRequest = RideRequest::find($request->reservation_request_id);
         if ($rideRequest){
-            $offer = new ReservationOffer();
+            $offer = new Offer();
             $offer->driver_id = $driver->id;
-            $offer->reservation_request_id = $rideRequest->id;
+            $offer->request_id = $rideRequest->id;
             $offer->price = $request->price;
             $offer->save();
             return $this->handleResponse(
@@ -122,8 +123,8 @@ class ReservationDController extends Controller
 
     public function getReservationOffer(Request $request) {
         $driver = $request->user();
-        $offers = ReservationOffer::with('reservationRequest', 'reservationRequest.stops')
-        ->whereHas('reservationRequest', function($q) {
+        $offers = Offer::with('request', 'request.stops')
+        ->whereHas('request', function($q) {
             $q->where('status', 'pending');
         })
         ->where("driver_id", $driver->id)->where('status', "pending")
@@ -161,7 +162,7 @@ class ReservationDController extends Controller
                 []
             );
         }        $driver = $request->user();
-        $lastOffer = ReservationOffer::where("driver_id", $driver->id)
+        $lastOffer = Offer::where("driver_id", $driver->id)
         ->where("id", $request->reservation_offer_id)->first();
         if (isset($lastOffer)) {
             $lastOffer->status = 'canceled';
@@ -185,11 +186,11 @@ class ReservationDController extends Controller
 
     public function getReservation(Request $request){
         $driverId = $request->user()->id;
-        $ride = Reservation::whereHas('reservationOffer', function($q) use ($driverId) {
+        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
         ->whereNotIn('status', ['completed', 'canceled_driver'])
-        ->with(['reservationOffer.reservationRequest', 'reservationOffer.reservationRequest.stops'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->latest()->first();
         if($ride){
             if($ride->status == 'canceled_user'){
@@ -224,9 +225,9 @@ class ReservationDController extends Controller
 
     public function cancelReservation(Request $request){
         $driverId = $request->user()->id;
-        $ride = Reservation::where('id', $request->reservation_id)
+        $ride = Ride::where('id', $request->reservation_id)
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['reservationOffer.reservationRequest', 'reservationOffer.reservationRequest.stops'])
+        ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
         $ride->status = "canceled_driver";
