@@ -360,4 +360,5 @@ class ReservationPController extends Controller
             []
         );
     }
+
 }

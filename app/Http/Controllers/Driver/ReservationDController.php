@@ -290,33 +290,4 @@ class ReservationDController extends Controller
         );
     }
 
-    public function setArrived(Request $request){
-        $driverId = $request->user()->id;
-        $ride = Ride::whereHas('offer', function($q) use ($driverId) {
-            $q->where('driver_id', $driverId);
-        })
-        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
-        ->with(['offer.request', 'offer.request.stops'])
-        ->latest()->first();
-        if($ride){
-        $ride->status = "arrived";
-        $ride->save();
-        return $this->handleResponse(
-            true,
-            "Driver Arrived! Enjoy Your Trip",
-            [],
-            [
-                "ride" => $ride
-            ],
-            []
-        );
-        }
-        return $this->handleResponse(
-            false,
-            "Ride Not Found",
-            [],
-            [],
-            []
-        );
-    }
 }

@@ -115,5 +115,4 @@ Route::post('/reservation/driver/cancel-reservaton-offer', [ReservationDControll
 Route::get('/reservation/driver/get', [ReservationDController::class, 'getReservation'])->middleware('auth:sanctum,driver');
 Route::post('/reservation/driver/cancel', [ReservationDController::class, 'cancelReservation'])->middleware('auth:sanctum,driver');
 Route::post('/reservation/driver/set-arriving', [ReservationDController::class,'setArriving'])->middleware('auth:sanctum,driver');
-Route::post('/reservation/driver/set-arrived', [ReservationDController::class, 'setArrived'])->middleware('auth:sanctum,driver');
 
