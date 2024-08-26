@@ -11,6 +11,7 @@ use App\Http\Controllers\User\RideController;
 use App\Http\Controllers\Driver\OfferController;
 use App\Http\Controllers\User\ReservationPController;
 use App\Http\Controllers\Driver\ReservationDController;
+use App\Http\Controllers\User\ReportController;
  
 
 
@@ -116,3 +117,6 @@ Route::get('/reservation/driver/get', [ReservationDController::class, 'getReserv
 Route::post('/reservation/driver/cancel', [ReservationDController::class, 'cancelReservation'])->middleware('auth:sanctum,driver');
 Route::post('/reservation/driver/set-arriving', [ReservationDController::class,'setArriving'])->middleware('auth:sanctum,driver');
 
+
+//Report
+Route::post('/report', [ReportController::class,'add'])->middleware('auth:sanctum');
