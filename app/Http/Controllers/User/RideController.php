@@ -456,6 +456,17 @@ class RideController extends Controller
             $ride->rate = $request->rate;
             $ride->review = $request->review;
             $ride->save();
+             // Calculate the new average rating for the driver
+            $averageRating = Ride::whereHas('offer.driver', function($q) use ($ride){
+                $q->where('driver_id', $ride->offer->driver_id);
+            })
+            ->whereNotNull('rate') // Only consider rides that have a rating
+            ->avg('rate');
+
+            // Update the driver's rate column
+            $driver = $ride->offer->driver;
+            $driver->rate = $averageRating;
+            $driver->save();
             return $this->handleResponse(
                 true,
                 "",
