@@ -37,7 +37,7 @@ class DriverController extends Controller
             'phone' => ['required','string','numeric','digits:11','unique:drivers,phone',
             'unique:drivers,add_phone'],
             'add_phone' => ['required','string','numeric','digits:11','unique:drivers,add_phone'],
-            'national_id' => ['required','numeric', 'digits:14'],
+            'national_id' => ['required','numeric', 'digits:14', "unique:drivers,national_id"],
             'social_status'=> ['required','string'],
             'gender'=> ['required','string','max:10'],
             'picture'=> ['required','image','mimes:jpeg,png,jpg,gif','max:2048'],
@@ -802,7 +802,7 @@ class DriverController extends Controller
                     []
                     );
                 }
-            $driver->is_approved = -1;
+            $driver->is_approved = 2;
             $driver->save();
             $reject = new RejectMessage();
             $reject->driver_id = $request->driver_id;

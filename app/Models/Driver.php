@@ -32,6 +32,7 @@ class Driver extends Authenticatable
         "email_last_verfication_code",
         "email_last_verfication_code_expird_at",
         "remember_token",
+        "is_approved"
     ];
 
     public function driverdocs() {
