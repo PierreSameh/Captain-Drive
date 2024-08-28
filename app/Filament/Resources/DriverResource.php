@@ -22,6 +22,8 @@ use App\Models\RejectMessage;
 use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification; // Make sure to use the correct namespace for Notification
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\ImageEntry;
 
 
 
@@ -35,7 +37,7 @@ class DriverResource extends Resource
     {
         return $form
             ->schema([
-               //
+               TextEntry::make('name'),
             ]);
     }
 
@@ -84,8 +86,20 @@ class DriverResource extends Resource
     {
         return $infolist
         ->schema([
-            TextEntry::make('name')
+            Section::make('Driver')
+            ->schema([
+            ImageEntry::make('picture')
+            ->path('storage/app/public'),
+            TextEntry::make('name'),
+            TextEntry::make('email'),
+            TextEntry::make('phone'),
+            TextEntry::make('add_phone'),
+            TextEntry::make('national_id'),
+            TextEntry::make('social_status'),
+            TextEntry::make('gender'),
+            ])
         ]);
+
     }
 
     public static function getRelations(): array
