@@ -24,6 +24,7 @@ use Filament\Notifications\Notification; // Make sure to use the correct namespa
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Support\Facades\FilamentIcon;
 
 
 
@@ -31,7 +32,7 @@ class DriverResource extends Resource
 {
     protected static ?string $model = Driver::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-eye';
 
     public static function form(Form $form): Form
     {
