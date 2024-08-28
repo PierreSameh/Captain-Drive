@@ -89,7 +89,12 @@ class DriverResource extends Resource
             Section::make('Driver')
             ->schema([
             ImageEntry::make('picture')
-            ->path('storage/app/public'),
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             TextEntry::make('name'),
             TextEntry::make('email'),
             TextEntry::make('phone'),
