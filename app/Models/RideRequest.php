@@ -20,7 +20,9 @@ class RideRequest extends Model
         "en_lat",
         "status",
         "type",
-        "time"
+        "time",
+        "distance",
+        "price"
     ];
 
     public function user(){

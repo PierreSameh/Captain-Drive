@@ -13,10 +13,92 @@ use App\Models\Offer;
 use App\Models\RideRequest;
 use App\Models\RideRequestStop;
 use Illuminate\Support\Facades\DB;
+use App\Models\Profit;
 
 class RideController extends Controller
 {
     use HandleTrait;
+
+    // public function sendRideRequest(Request $request) {
+    //     $validator = Validator::make($request->all(), [
+    //         "vehicle"=> ["required", "numeric", "in:1,2,3,4,5"],
+    //         "st_location"=> ["required","string","max:255"],
+    //         "en_location"=> ["required","string","max:255"],
+    //         "st_lng"=> ["required","string"],
+    //         "st_lat"=> ["required","string"],
+    //         "en_lng"=> ["required","string"],
+    //         "en_lat"=> ["required","string"],
+    //         "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
+    //     ]);
+        
+    //     if ($validator->fails()){
+    //         return $this->handleResponse(
+    //             false,
+    //             "",
+    //             [$validator->errors()->first()],
+    //             [],
+    //             [
+    //                 "Vehicle Types" => [
+    //                     '1 -> Car',
+    //                     '2 -> conditioned car',
+    //                     '3 -> Motorcycle',
+    //                     '4 -> Taxi',
+    //                     '5 -> Bus'
+    //                     ]
+    //             ]
+    //         );
+    //     }
+
+    //     $user = $request->user();
+    //     $st_lng = $request->st_lng;
+    //     $st_lat = $request->st_lat;
+    //     $en_lng = $request->en_lng;
+    //     $en_lat = $request->en_lat;
+    //     if ($user && $st_lng && $st_lat && $en_lng && $en_lat){
+    //         $rideRequest = RideRequest::create([
+    //             "user_id"=> $user->id,
+    //             "vehicle"=> $request->vehicle,
+    //             "st_location"=> $request->st_location,
+    //             "en_location"=> $request->en_location,
+    //             "st_lng"=> $st_lng,
+    //             "st_lat"=> $st_lat,
+    //             "en_lng"=> $en_lng,
+    //             "en_lat"=> $en_lat
+    //         ]);
+    //         $stopLocations = [];
+    //     if ($request->has("stop_locations")) {
+    //         foreach ($request->stop_locations as $stop_location) {
+    
+    //             $stop = RideRequestStop::create([
+    //                 "ride_request_id"=> $rideRequest->id,
+    //                 'stop_location' => $stop_location['stop_location'],
+    //                 'lng' => $stop_location['lng'],
+    //                 'lat'=> $stop_location['lat']
+    //             ]);
+
+    //             $stopLocations[] = $stop;
+    //         } 
+    //     }
+    //         $withStops = RideRequest::where('id', $rideRequest->id)->with('stops')->first();
+    //         return $this->handleResponse(
+    //             true,
+    //             "Ride Request Sent Successfully",
+    //             [],
+    //             [
+    //                 "Request" => $withStops,
+    //             ],
+    //             []
+    //         );
+    //     }
+    //     return $this->handleResponse(
+    //         false,
+    //         "Can't Get Location",
+    //         [],
+    //         [],
+    //         ["Enter lng & lat data correctly"]
+    //     );
+    // }
+
 
     public function sendRideRequest(Request $request) {
         $validator = Validator::make($request->all(), [
@@ -29,7 +111,7 @@ class RideController extends Controller
             "en_lat"=> ["required","string"],
             "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
         ]);
-        
+    
         if ($validator->fails()){
             return $this->handleResponse(
                 false,
@@ -43,17 +125,41 @@ class RideController extends Controller
                         '3 -> Motorcycle',
                         '4 -> Taxi',
                         '5 -> Bus'
-                        ]
+                    ]
                 ]
             );
         }
-
+    
         $user = $request->user();
         $st_lng = $request->st_lng;
         $st_lat = $request->st_lat;
         $en_lng = $request->en_lng;
         $en_lat = $request->en_lat;
-        if ($user && $st_lng && $st_lat && $en_lng && $en_lat){
+    
+        if ($user && $st_lng && $st_lat && $en_lng && $en_lat) {
+    
+            // Haversine formula to calculate distance in kilometers
+            $earthRadius = 6371; // Earth's radius in kilometers
+    
+            $dLat = deg2rad($en_lat - $st_lat);
+            $dLng = deg2rad($en_lng - $st_lng);
+    
+            $a = sin($dLat / 2) * sin($dLat / 2) +
+                 cos(deg2rad($st_lat)) * cos(deg2rad($en_lat)) *
+                 sin($dLng / 2) * sin($dLng / 2);
+    
+            $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+    
+            $distance = $earthRadius * $c; // Distance in kilometers
+    
+            // Assume the price per kilometer is stored in a variable or a config
+            $profit = Profit::first();
+            if($profit){
+            $pricePerKilometer = $profit->per_kilo; // Example price, replace with actual value
+    
+            $totalPrice = $distance * $pricePerKilometer;
+            }
+            // Save the ride request
             $rideRequest = RideRequest::create([
                 "user_id"=> $user->id,
                 "vehicle"=> $request->vehicle,
@@ -62,22 +168,25 @@ class RideController extends Controller
                 "st_lng"=> $st_lng,
                 "st_lat"=> $st_lat,
                 "en_lng"=> $en_lng,
-                "en_lat"=> $en_lat
+                "en_lat"=> $en_lat,
+                "distance"=> $distance, // Save the calculated distance
+                "price"=> $totalPrice // Save the calculated price
             ]);
-            $stopLocations = [];
-        if ($request->has("stop_locations")) {
-            foreach ($request->stop_locations as $stop_location) {
     
-                $stop = RideRequestStop::create([
-                    "ride_request_id"=> $rideRequest->id,
-                    'stop_location' => $stop_location['stop_location'],
-                    'lng' => $stop_location['lng'],
-                    'lat'=> $stop_location['lat']
-                ]);
-
-                $stopLocations[] = $stop;
-            } 
-        }
+            // Process stop locations
+            $stopLocations = [];
+            if ($request->has("stop_locations")) {
+                foreach ($request->stop_locations as $stop_location) {
+                    $stop = RideRequestStop::create([
+                        "ride_request_id"=> $rideRequest->id,
+                        'stop_location' => $stop_location['stop_location'],
+                        'lng' => $stop_location['lng'],
+                        'lat'=> $stop_location['lat']
+                    ]);
+                    $stopLocations[] = $stop;
+                }
+            }
+    
             $withStops = RideRequest::where('id', $rideRequest->id)->with('stops')->first();
             return $this->handleResponse(
                 true,
@@ -85,10 +194,13 @@ class RideController extends Controller
                 [],
                 [
                     "Request" => $withStops,
+                    "Distance" => $distance,
+                    "Total Price" => $totalPrice
                 ],
                 []
             );
         }
+    
         return $this->handleResponse(
             false,
             "Can't Get Location",
@@ -97,7 +209,6 @@ class RideController extends Controller
             ["Enter lng & lat data correctly"]
         );
     }
-
 
     public function getForUserRideRequest(Request $request) {
         $user = $request->user();
