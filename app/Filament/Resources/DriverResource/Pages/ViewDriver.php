@@ -18,6 +18,8 @@ class ViewDriver extends ViewRecord
 
     protected function getInfolists(): array
     {
+        dd($this->record); // This will dump the driver record and exit
+
         return [
             Infolist::make([
                 Section::make('Driver Details')
@@ -38,10 +40,6 @@ class ViewDriver extends ViewRecord
                             ->label('Gender'),
                         TextEntry::make('status')
                             ->label('Status'),
-                        TextEntry::make('lat')
-                            ->label('Latitude'),
-                        TextEntry::make('lng')
-                            ->label('Longitude'),
                         TextEntry::make('id')
                             ->label('Driver ID')
                             ->formatStateUsing(fn ($state) => $this->record->super_key . $this->record->unique_id),

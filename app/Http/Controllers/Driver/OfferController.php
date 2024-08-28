@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Vehicle;
 use App\Models\Ride;
 use App\Models\Wallet;
+use App\Models\Profit;
 
 
 
@@ -297,8 +298,11 @@ class OfferController extends Controller
         $ride->status = "completed";
         $ride->save();
         $wallet = Wallet::where('driver_id', $driverId)->first();
-        $wallet->balance = $wallet->balance - ($ride->offer->price * 0.20);
+        $profit = Profit::first();
+        if($profit){
+        $wallet->balance = $wallet->balance - ($ride->offer->price * ($profit->percentage / 100));
         $wallet->save();
+        }
         return $this->handleResponse(
             true,
             "You Have Reached Your Destination, Have A Nice Day!",
