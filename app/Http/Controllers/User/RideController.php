@@ -197,8 +197,6 @@ class RideController extends Controller
                 [],
                 [
                     "Request" => $withStops,
-                    "Distance" => $distance,
-                    "Total Price" => $totalPrice
                 ],
                 []
             );
