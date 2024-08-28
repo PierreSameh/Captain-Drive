@@ -153,12 +153,7 @@ class RideController extends Controller
             $distance = $earthRadius * $c; // Distance in kilometers
     
             // Assume the price per kilometer is stored in a variable or a config
-            $profit = Profit::first();
-            if($profit){
-            $pricePerKilometer = $profit->per_kilo; // Example price, replace with actual value
-    
-            $totalPrice = $distance * $pricePerKilometer;
-            }
+
             // Save the ride request
             $rideRequest = RideRequest::create([
                 "user_id"=> $user->id,
@@ -169,10 +164,18 @@ class RideController extends Controller
                 "st_lat"=> $st_lat,
                 "en_lng"=> $en_lng,
                 "en_lat"=> $en_lat,
-                "distance"=> $distance, // Save the calculated distance
-                "price"=> $totalPrice // Save the calculated price
             ]);
+
+            $profit = Profit::first();
+            if($profit){
+            $pricePerKilometer = $profit->per_kilo; // Example price, replace with actual value
     
+            $totalPrice = $distance * $pricePerKilometer;
+            $rideRequest->distance = $distance;
+            $rideRequest->price = $totalPrice;
+            $rideRequest->save();
+            }
+
             // Process stop locations
             $stopLocations = [];
             if ($request->has("stop_locations")) {

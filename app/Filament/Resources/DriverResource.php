@@ -19,7 +19,10 @@ use Filament\Forms\Components\TextInput;  // Import Textarea for form
 use Filament\Tables\Actions\Action; // Import Action for custom actions
 use Filament\Forms\Components\Card;
 use App\Models\RejectMessage;
+use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification; // Make sure to use the correct namespace for Notification
+use Filament\Infolists\Components\TextEntry;
+
 
 
 class DriverResource extends Resource
@@ -75,6 +78,14 @@ class DriverResource extends Resource
             Tables\Actions\ViewAction::make(),
         ])
         ->recordUrl(null); // Disable the row click behavior
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+        ->schema([
+            TextEntry::make('name')
+        ]);
     }
 
     public static function getRelations(): array
