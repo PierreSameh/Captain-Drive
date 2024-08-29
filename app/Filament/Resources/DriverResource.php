@@ -166,6 +166,27 @@ class DriverResource extends Resource
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
                 ])
+            ]),
+            Section::make('Vehicle')
+            ->schema([
+                Grid::make(3)->schema([
+            TextEntry::make('vehicle.type')
+            ->label('Vehicle')
+            ->formatStateUsing(function ($state) {
+                return match ($state) {
+                    1 => 'Car',
+                    2 => 'Conditioned Car',
+                    3 => 'Van',
+                    4 => 'Truck',
+                    5 => 'Motorcycle',
+                    default => 'Unknown',
+                };
+            }),
+            TextEntry::make('vehicle.model')
+            ->label('Vehicle Model'),
+            TextEntry::make('vehicle.plates_number')
+            ->label('Plates'),
+                ])
             ])
         ]);
 
