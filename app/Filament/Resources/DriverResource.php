@@ -25,6 +25,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Support\Facades\FilamentIcon;
+use Filament\Infolists\Components\Grid;
+
 
 
 
@@ -103,6 +105,67 @@ class DriverResource extends Resource
             TextEntry::make('national_id'),
             TextEntry::make('social_status'),
             TextEntry::make('gender'),
+            ]),
+            Section::make('Driver Docs')
+            ->schema([
+                Grid::make(4)->schema([
+            ImageEntry::make('driverdocs.national_front')
+            ->label('National ID (front)')
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.national_back')
+            ->label('National ID (back)')
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.driverl_front')
+            ->label("Driver's License (front)")
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.driverl_back')
+            ->label("Driver's License (back)")
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.vehicle_front')
+            ->label("Vehicle's License (front)")
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.vehicle_back')
+            ->label("Vehicle's License (back)")
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ImageEntry::make('driverdocs.criminal_record')
+            ->label("Criminal Record")
+            ->extraImgAttributes([
+                'alt' => 'Not Found',
+                'loading' => 'lazy',
+            ])
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
+            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+                ])
             ])
         ]);
 
