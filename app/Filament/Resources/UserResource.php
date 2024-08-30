@@ -13,6 +13,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Infolists\Components\ImageEntry;
+use Filament\Forms\Components\FileUpload;
+
+
 
 
 class UserResource extends Resource
@@ -39,15 +43,7 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('gender')
                     ->maxLength(255)
                     ->default(null),
-                Forms\Components\TextInput::make('picture')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('super_key')
-                    ->maxLength(255)
-                    ->default(null),
-                Forms\Components\TextInput::make('unique_id')
-                    ->maxLength(255)
-                    ->default(null),
+                FileUpload::make('picture'),
                 Forms\Components\Toggle::make('is_email_verified')
                     ->required(),
             ]);
