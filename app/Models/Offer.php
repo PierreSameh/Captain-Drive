@@ -21,7 +21,7 @@ class Offer extends Model
     }
 
     public function request(){
-        return $this->belongsTo(RideRequest::class);
+        return $this->belongsTo(RideRequest::class, 'request_id');
     }
 
     public function rides(){

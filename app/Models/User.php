@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Laravel\Sanctum\HasApiTokens; // If you're using Laravel Sanctum
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -45,6 +47,14 @@ class User extends Authenticatable
     public function report(){
         return $this->hasMany(Report::class);
     }
+
+    public function completedRides(): HasMany
+    {
+        return $this->hasMany(RideRequest::class)->whereHas('offers.rides', function ($query) {
+            $query->where('status', 'completed');
+        })->where('user_id', $this->id);
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.
