@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\UserResource\Pages;
+namespace App\Filament\Resources\RideResource\Pages;
 
-use App\Filament\Resources\UserResource;
+use App\Filament\Resources\RideResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewUser extends ViewRecord
+class ViewRide extends ViewRecord
 {
-    protected static string $resource = UserResource::class;
+    protected static string $resource = RideResource::class;
 
     protected function getHeaderActions(): array
     {
