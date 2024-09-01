@@ -19,6 +19,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Infolists\Components\Grid;
+use Illuminate\Support\Facades\DB;
 
 class RideResource extends Resource
 {
@@ -41,6 +42,17 @@ class RideResource extends Resource
                 Tables\Columns\TextColumn::make('offer.driver.name')
                     ->label('Driver')
                     ->searchable(),
+                    Tables\Columns\TextColumn::make('offer.driver')
+                    ->label('Driver ID')
+                    ->toggleable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->offer->driver->super_key . $record->offer->driver->unique_id;
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('offer.driver', function (Builder $driverQuery) use ($search) {
+                            $driverQuery->where(DB::raw("CONCAT(super_key, unique_id)"), 'like', "%{$search}%");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('offer.request.user.name')
                     ->label('Passenger')
                     ->searchable(),
