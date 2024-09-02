@@ -103,7 +103,7 @@ class DriverResource extends Resource
             ])
             ->getStateUsing(function ($record) {
                 if ($record->picture && $record->picture !== '') {
-                    return asset('storage/app/public' . $record->picture);
+                    return asset('storage/app/public/' . $record->picture);
                 }
                 return null;
             })
