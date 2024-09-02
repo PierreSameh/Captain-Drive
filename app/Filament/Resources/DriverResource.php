@@ -239,7 +239,8 @@ class DriverResource extends Resource
             ->label('Vehicle Model'),
             TextEntry::make('vehicle.plates_number')
             ->label('Plates'),
-                ]national_back
+             ])
+            ])
         ]);
 
     }
