@@ -26,6 +26,7 @@ use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Infolists\Components\Grid;
+use Illuminate\Support\Facades\Storage;
 
 
 
@@ -100,6 +101,12 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
+            ->getStateUsing(function ($record) {
+                if ($record->picture && $record->picture !== '') {
+                    return asset('storage/app/public' . $record->picture);
+                }
+                return null;
+            })
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             TextEntry::make('name'),
