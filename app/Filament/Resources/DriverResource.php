@@ -120,21 +120,24 @@ class DriverResource extends Resource
             Section::make('Driver Docs')
             ->schema([
                 Grid::make(4)->schema([
-            ImageEntry::make('driverdocs.national_front')
-            ->label('National ID (front)')
-            ->extraImgAttributes([
-                'alt' => 'Not Found',
-                'loading' => 'lazy',
-            ])
-            ->getStateUsing(function ($record) {
-                if (true) {
-                    dd($record);
-                    return asset('storage/app/public/' . $record->national_front);
-                }
-                return null;
-            })
-            ->url(fn($record) => 'https://captain-drive.webbing-agency.com/storage/app/public/' . $record->national_front)
-            ->visible(fn($record) => $record->national_front !== null && $record->national_front !== ''),
+                    ImageEntry::make('driverdocs.national_front')
+                    ->label('National ID (front)')
+                    ->extraImgAttributes([
+                        'alt' => 'Not Found',
+                        'loading' => 'lazy',
+                    ])
+                    ->getStateUsing(function (Driver $record) {
+                        // Ensure the driverdocs relationship is loaded
+                        if ($record->relationLoaded('driverdocs') && $record->driverdocs->national_front) {
+                            return asset('storage/' . $record->driverdocs->national_front);
+                        }
+                        return null;
+                    })
+                    ->url(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front
+                        ? asset('storage/' . $record->driverdocs->national_front)
+                        : null
+                    )
+                    ->visible(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front !== null),
             ImageEntry::make('driverdocs.national_back')
             ->label('National ID (back)')
             ->extraImgAttributes([
