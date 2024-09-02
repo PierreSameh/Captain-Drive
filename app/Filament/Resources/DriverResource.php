@@ -127,8 +127,8 @@ class DriverResource extends Resource
                 'loading' => 'lazy',
             ])
             ->getStateUsing(function ($record) {
-                if ($record->driverdocs->national_front && $record->driverdocs->national_front !== '') {
-                    return asset('storage/app/public/' . $record->driverdocs->national_front);
+                if ($record->national_front && $record->national_front !== '') {
+                    return asset('storage/app/public/' . $record->national_front);
                 }
                 return null;
             })
