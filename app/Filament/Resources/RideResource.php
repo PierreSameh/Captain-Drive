@@ -22,7 +22,8 @@ use Filament\Infolists\Components\Grid;
 use Illuminate\Support\Facades\DB;
 use Filament\Infolists\Components\View; // Add this import
 use Filament\Infolists\Components\ViewEntry;
-
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 
 
@@ -114,9 +115,64 @@ class RideResource extends Resource
             Section::make('Ride Video')
             ->schema([
                 ViewEntry::make('video')
-                    ->view('filament.infolists.components.video-player')
-                    ->getStateUsing(fn (Ride $record): ?string => $record->video?->path)
-            ])
+                            ->view('filament.infolists.components.video-player')
+                            ->getStateUsing(function (Ride $record) {
+                                $now = Carbon::now();
+                                $video = $record->video;
+
+                                // $debug = [
+                                //     'ride_id' => $record->id,
+                                //     'video_relation' => $video,
+                                //     'video_path' => $video?->path,
+                                //     'video_created_at' => $video?->created_at,
+                                //     'now' => $now->toDateTimeString(),
+                                //     'app_timezone' => config('app.timezone'),
+                                //     'db_timezone' => DB::connection()->getConfig('timezone'),
+                                // ];
+
+                                if (!$video) {
+                                    return [
+                                        'status' => 'not_found',
+                                        'message' => 'Video not found',
+                                        // 'debug' => $debug
+                                    ];
+                                }
+
+                                $videoPath = $video->path;
+                                $videoCreatedAt = Carbon::parse($video->created_at)->setTimezone(config('app.timezone'));
+
+                                // $debug['video_created_at_tz'] = $videoCreatedAt->toDateTimeString();
+                                // $debug['storage_exists'] = Storage::disk('public')->exists($videoPath);
+
+                                $diffInHours = $now->diffInHours($videoCreatedAt, false);
+                                // $debug['diff_in_hours'] = $diffInHours;
+
+                                // Check if the file exists in storage
+                                if (!Storage::disk('public')->exists($videoPath)) {
+                                    return [
+                                        'status' => 'not_found',
+                                        'message' => 'Video file not found in storage',
+                                        // 'debug' => $debug
+                                    ];
+                                }
+
+                                // Check if the video has expired (72 hours after creation)
+                                // We use abs() to ensure we're always dealing with a positive number
+                                if (abs($diffInHours) > 72) {
+                                    return [
+                                        'status' => 'expired',
+                                        'message' => 'Video expired',
+                                        // 'debug' => $debug
+                                    ];
+                                }
+
+                                return [
+                                    'status' => 'available',
+                                    'path' => $videoPath,
+                                    // 'debug' => $debug
+                                ];
+                            })
+                            ])
             ]),
         ]);
     }
