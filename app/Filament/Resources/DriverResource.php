@@ -127,7 +127,7 @@ class DriverResource extends Resource
                 'loading' => 'lazy',
             ])
             ->getStateUsing(function ($record) {
-                if ($record->national_front && $record->national_front !== '') {
+                if (true) {
                     dd($record);
                     return asset('storage/app/public/' . $record->national_front);
                 }
