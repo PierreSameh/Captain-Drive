@@ -129,12 +129,12 @@ class DriverResource extends Resource
                     ->getStateUsing(function (Driver $record) {
                         // Ensure the driverdocs relationship is loaded
                         if ($record->relationLoaded('driverdocs') && $record->driverdocs->national_front) {
-                            return asset('storage/' . $record->driverdocs->national_front);
+                            return asset('storage/app/public/' . $record->driverdocs->national_front);
                         }
                         return null;
                     })
                     ->url(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front
-                        ? asset('storage/' . $record->driverdocs->national_front)
+                        ? asset('storage/app/public/' . $record->driverdocs->national_front)
                         : null
                     )
                     ->visible(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front !== null),
