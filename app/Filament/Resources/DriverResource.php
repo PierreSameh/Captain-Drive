@@ -179,70 +179,130 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->driverl_front && $record->driverl_front !== '') {
-                    return asset('storage/app/public/' . $record->driverl_front);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->driverl_front) {
+                        return asset('storage/app/public/' . $driverDoc->driverl_front);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->driverl_front)
-            ->visible(fn($record) => $record->driverl_front !== null && $record->driverl_front !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->driverl_front
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->driverl_front)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->driverl_front !== null),
             ImageEntry::make('driverdocs.driverl_back')
             ->label("Driver's License (back)")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->driverl_back && $record->driverl_back !== '') {
-                    return asset('storage/app/public/' . $record->driverl_back);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->driverl_back) {
+                        return asset('storage/app/public/' . $driverDoc->driverl_back);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->driverl_back)
-            ->visible(fn($record) => $record->driverl_back !== null && $record->driverl_back !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->driverl_back
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->driverl_back)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->driverl_back !== null),
             ImageEntry::make('driverdocs.vehicle_front')
             ->label("Vehicle's License (front)")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->vehicle_front && $record->vehicle_front !== '') {
-                    return asset('storage/app/public/' . $record->vehicle_front);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->vehicle_front) {
+                        return asset('storage/app/public/' . $driverDoc->vehicle_front);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->vehicle_front)
-            ->visible(fn($record) => $record->vehicle_front !== null && $record->vehicle_front !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->vehicle_front
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->vehicle_front)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->vehicle_front !== null),
             ImageEntry::make('driverdocs.vehicle_back')
             ->label("Vehicle's License (back)")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->vehicle_back && $record->vehicle_back !== '') {
-                    return asset('storage/app/public/' . $record->vehicle_back);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->vehicle_back) {
+                        return asset('storage/app/public/' . $driverDoc->vehicle_back);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->vehicle_back)
-            ->visible(fn($record) => $record->vehicle_back !== null && $record->vehicle_back !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->vehicle_back
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->vehicle_back)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->vehicle_back !== null),
             ImageEntry::make('driverdocs.criminal_record')
             ->label("Criminal Record")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->criminal_record && $record->criminal_record !== '') {
-                    return asset('storage/app/public/' . $record->criminal_record);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->criminal_record) {
+                        return asset('storage/app/public/' . $driverDoc->criminal_record);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->criminal_record)
-            ->visible(fn($record) => $record->criminal_record !== null && $record->criminal_record !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->criminal_record
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->criminal_record)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->criminal_record !== null),
                 ])
             ]),
             Section::make('Vehicle')
