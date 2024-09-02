@@ -128,12 +128,13 @@ class DriverResource extends Resource
             ])
             ->getStateUsing(function ($record) {
                 if ($record->national_front && $record->national_front !== '') {
+                    dd($record);
                     return asset('storage/app/public/' . $record->national_front);
                 }
                 return null;
             })
             ->url(fn($record) => 'https://captain-drive.webbing-agency.com/storage/app/public/' . $record->national_front)
-            ->visible(fn($record) => $record->driverdocs->national_front !== null && $record->driverdocs->national_front !== ''),
+            ->visible(fn($record) => $record->national_front !== null && $record->national_front !== ''),
             ImageEntry::make('driverdocs.national_back')
             ->label('National ID (back)')
             ->extraImgAttributes([
