@@ -126,6 +126,12 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
+            ->getStateUsing(function ($record) {
+                if ($record->driverdocs->national_front && $record->driverdocs->national_front !== '') {
+                    return asset('storage/app/public/' . $record->driverdocs->national_front);
+                }
+                return null;
+            })
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             ImageEntry::make('driverdocs.national_back')
@@ -134,6 +140,12 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
+            ->getStateUsing(function ($record) {
+                if ($record->picture && $record->picture !== '') {
+                    return asset('storage/app/public/' . $record->picture);
+                }
+                return null;
+            })
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             ImageEntry::make('driverdocs.driverl_front')
@@ -142,6 +154,12 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
+            ->getStateUsing(function ($record) {
+                if ($record->picture && $record->picture !== '') {
+                    return asset('storage/app/public/' . $record->picture);
+                }
+                return null;
+            })
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             ImageEntry::make('driverdocs.driverl_back')
@@ -150,6 +168,12 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
+            ->getStateUsing(function ($record) {
+                if ($record->picture && $record->picture !== '') {
+                    return asset('storage/app/public/' . $record->picture);
+                }
+                return null;
+            })
             ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             ImageEntry::make('driverdocs.vehicle_front')
