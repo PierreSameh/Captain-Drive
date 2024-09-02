@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Driver;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Video;
+use App\Models\Ride;
 use Illuminate\Support\Facades\Storage;
 use App\HandleTrait;
 use Illuminate\Support\Facades\Validator;
@@ -31,7 +32,8 @@ class VideoController extends Controller
                 []
             );
         }
-
+        $ride = Ride::where('id', $request->ride_id)->first();
+        if ($ride) {
         if ($request->hasFile('video')) {
             $file = $request->file('video');
             $path = $file->store('videos', 'public');
@@ -59,6 +61,14 @@ class VideoController extends Controller
             [],
             []
         );
+        }   
+            return $this->handleResponse(
+                false,
+                "Ride Not Found",
+                [],
+                [],
+                []
+            );
     }
 
 }
