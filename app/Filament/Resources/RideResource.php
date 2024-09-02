@@ -20,6 +20,11 @@ use Filament\Infolists\Components\ImageEntry;
 use Filament\Support\Facades\FilamentIcon;
 use Filament\Infolists\Components\Grid;
 use Illuminate\Support\Facades\DB;
+use Filament\Infolists\Components\View; // Add this import
+use Filament\Infolists\Components\ViewEntry;
+
+
+
 
 class RideResource extends Resource
 {
@@ -106,6 +111,12 @@ class RideResource extends Resource
             TextEntry::make('updated_at')
             ->label('End Time'),
             ]),
+            Section::make('Ride Video')
+            ->schema([
+                ViewEntry::make('video')
+                    ->view('filament.infolists.components.video-player')
+                    ->getStateUsing(fn (Ride $record): ?string => $record->video?->path)
+            ])
             ]),
         ]);
     }
