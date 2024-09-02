@@ -153,14 +153,26 @@ class DriverResource extends Resource
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->getStateUsing(function ($record) {
-                if ($record->national_back && $record->national_back !== '') {
-                    return asset('storage/app/public/' . $record->national_back);
+            ->getStateUsing(function (Driver $record) {
+                // Attempt to access the related driver document
+                try {
+                    $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+        
+                    if ($driverDoc && $driverDoc->national_back) {
+                        return asset('storage/app/public/' . $driverDoc->national_back);
+                    }
+                } catch (\Exception $e) {
+                    // Handle the exception and return null or log it if necessary
+                    return null;
                 }
+        
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->national_back)
-            ->visible(fn($record) => $record->national_back !== null && $record->national_back !== ''),
+            ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->national_back
+                ? asset('storage/app/public/' . $record->driverdocs()->first()->national_back)
+                : null
+            )
+            ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->national_back !== null),
             ImageEntry::make('driverdocs.driverl_front')
             ->label("Driver's License (front)")
             ->extraImgAttributes([
