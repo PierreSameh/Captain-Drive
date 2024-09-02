@@ -141,13 +141,13 @@ class DriverResource extends Resource
                 'loading' => 'lazy',
             ])
             ->getStateUsing(function ($record) {
-                if ($record->picture && $record->picture !== '') {
-                    return asset('storage/app/public/' . $record->picture);
+                if ($record->national_back && $record->national_back !== '') {
+                    return asset('storage/app/public/' . $record->national_back);
                 }
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->national_back)
+            ->visible(fn($record) => $record->national_back !== null && $record->national_back !== ''),
             ImageEntry::make('driverdocs.driverl_front')
             ->label("Driver's License (front)")
             ->extraImgAttributes([
@@ -155,13 +155,13 @@ class DriverResource extends Resource
                 'loading' => 'lazy',
             ])
             ->getStateUsing(function ($record) {
-                if ($record->picture && $record->picture !== '') {
-                    return asset('storage/app/public/' . $record->picture);
+                if ($record->driverl_front && $record->driverl_front !== '') {
+                    return asset('storage/app/public/' . $record->driverl_front);
                 }
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->driverl_front)
+            ->visible(fn($record) => $record->driverl_front !== null && $record->driverl_front !== ''),
             ImageEntry::make('driverdocs.driverl_back')
             ->label("Driver's License (back)")
             ->extraImgAttributes([
@@ -169,37 +169,55 @@ class DriverResource extends Resource
                 'loading' => 'lazy',
             ])
             ->getStateUsing(function ($record) {
-                if ($record->picture && $record->picture !== '') {
-                    return asset('storage/app/public/' . $record->picture);
+                if ($record->driverl_back && $record->driverl_back !== '') {
+                    return asset('storage/app/public/' . $record->driverl_back);
                 }
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->driverl_back)
+            ->visible(fn($record) => $record->driverl_back !== null && $record->driverl_back !== ''),
             ImageEntry::make('driverdocs.vehicle_front')
             ->label("Vehicle's License (front)")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->getStateUsing(function ($record) {
+                if ($record->vehicle_front && $record->vehicle_front !== '') {
+                    return asset('storage/app/public/' . $record->vehicle_front);
+                }
+                return null;
+            })
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->vehicle_front)
+            ->visible(fn($record) => $record->vehicle_front !== null && $record->vehicle_front !== ''),
             ImageEntry::make('driverdocs.vehicle_back')
             ->label("Vehicle's License (back)")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->getStateUsing(function ($record) {
+                if ($record->vehicle_back && $record->vehicle_back !== '') {
+                    return asset('storage/app/public/' . $record->vehicle_back);
+                }
+                return null;
+            })
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->vehicle_back)
+            ->visible(fn($record) => $record->vehicle_back !== null && $record->vehicle_back !== ''),
             ImageEntry::make('driverdocs.criminal_record')
             ->label("Criminal Record")
             ->extraImgAttributes([
                 'alt' => 'Not Found',
                 'loading' => 'lazy',
             ])
-            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->picture)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->getStateUsing(function ($record) {
+                if ($record->criminal_record && $record->criminal_record !== '') {
+                    return asset('storage/app/public/' . $record->criminal_record);
+                }
+                return null;
+            })
+            ->url(fn($record) => 'http://localhost:8000/storage/' . $record->criminal_record)
+            ->visible(fn($record) => $record->criminal_record !== null && $record->criminal_record !== ''),
                 ])
             ]),
             Section::make('Vehicle')
@@ -221,8 +239,7 @@ class DriverResource extends Resource
             ->label('Vehicle Model'),
             TextEntry::make('vehicle.plates_number')
             ->label('Plates'),
-                ])
-            ])
+                ]national_back
         ]);
 
     }
