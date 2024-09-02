@@ -132,7 +132,7 @@ class DriverResource extends Resource
                 }
                 return null;
             })
-            ->url(fn($record) => 'http://localhost:8000/storage/app/public/' . $record->picture)
+            ->url(fn($record) => 'http://localhost:8000/storage/app/public/' . $record->national_front)
             ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
             ImageEntry::make('driverdocs.national_back')
             ->label('National ID (back)')
