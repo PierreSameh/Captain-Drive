@@ -133,7 +133,7 @@ class DriverResource extends Resource
                 return null;
             })
             ->url(fn($record) => 'https://captain-drive.webbing-agency.com/storage/app/public/' . $record->national_front)
-            ->visible(fn($record) => $record->picture !== null && $record->picture !== ''),
+            ->visible(fn($record) => $record->national_front !== null && $record->national_front !== ''),
             ImageEntry::make('driverdocs.national_back')
             ->label('National ID (back)')
             ->extraImgAttributes([
