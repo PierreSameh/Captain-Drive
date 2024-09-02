@@ -18,4 +18,7 @@ class Ride extends Model
         return $this->belongsTo(Offer::class);
     }
 
+    public function video(){
+        return $this->hasOne(Video::class);
+    }
 }

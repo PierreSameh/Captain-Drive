@@ -12,6 +12,7 @@ use App\Http\Controllers\Driver\OfferController;
 use App\Http\Controllers\User\ReservationPController;
 use App\Http\Controllers\Driver\ReservationDController;
 use App\Http\Controllers\User\ReportController;
+use App\Http\Controllers\Driver\VideoController;
  
 
 
@@ -120,3 +121,6 @@ Route::post('/reservation/driver/set-arriving', [ReservationDController::class,'
 
 //Report
 Route::post('/report', [ReportController::class,'add'])->middleware('auth:sanctum');
+
+//Video
+Route::post('/video', [VideoController::class,'store'])->middleware('auth:sanctum,driver');
