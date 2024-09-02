@@ -121,23 +121,32 @@ class DriverResource extends Resource
             ->schema([
                 Grid::make(4)->schema([
                     ImageEntry::make('driverdocs.national_front')
-                    ->label('National ID (front)')
-                    ->extraImgAttributes([
-                        'alt' => 'Not Found',
-                        'loading' => 'lazy',
-                    ])
-                    ->getStateUsing(function (Driver $record) {
-                        // Ensure the driverdocs relationship is loaded
-                        if ($record->relationLoaded('driverdocs') && $record->driverdocs->national_front) {
-                            return asset('storage/app/public/' . $record->driverdocs->national_front);
-                        }
-                        return null;
-                    })
-                    ->url(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front
-                        ? asset('storage/app/public/' . $record->driverdocs->national_front)
-                        : null
-                    )
-                    ->visible(fn($record) => $record->relationLoaded('driverdocs') && $record->driverdocs->national_front !== null),
+    ->label('National ID (front)')
+    ->extraImgAttributes([
+        'alt' => 'Not Found',
+        'loading' => 'lazy',
+    ])
+    ->getStateUsing(function (Driver $record) {
+        // Attempt to access the related driver document
+        try {
+            $driverDoc = $record->driverdocs()->first(); // Use the relationship method directly
+
+            if ($driverDoc && $driverDoc->national_front) {
+                return asset('storage/app/public/' . $driverDoc->national_front);
+            }
+        } catch (\Exception $e) {
+            // Handle the exception and return null or log it if necessary
+            return null;
+        }
+
+        return null;
+    })
+    ->url(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->national_front
+        ? asset('storage/app/public/' . $record->driverdocs()->first()->national_front)
+        : null
+    )
+    ->visible(fn($record) => $record->driverdocs()->exists() && $record->driverdocs()->first()->national_front !== null),
+
             ImageEntry::make('driverdocs.national_back')
             ->label('National ID (back)')
             ->extraImgAttributes([
