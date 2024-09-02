@@ -5,7 +5,8 @@
 <x-filament-infolists::entry-wrapper :entry="$entry">
     @if ($state['status'] === 'available')
         <video width="100%" controls>
-            <source src="{{ Storage::disk('public')->url($state['path']) }}" type="video/mp4">
+            {{-- <source src="{{ Storage::disk('public')->url($state['path']) }}" type="video/mp4"> --}}
+            <source src="{{ asset("storage/app/public/" . url($state['path']) }}" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     @else
