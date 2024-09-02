@@ -21,6 +21,8 @@ class ReportsResource extends Resource
     protected static ?string $model = Report::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-exclamation-circle';
+    protected static ?string $navigationGroup = 'Activities';
+
 
     public static function form(Form $form): Form
     {

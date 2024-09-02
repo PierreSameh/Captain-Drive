@@ -31,7 +31,9 @@ class RideResource extends Resource
 {
     protected static ?string $model = Ride::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationGroup = 'Activities';
+
 
     public static function form(Form $form): Form
     {
@@ -62,6 +64,17 @@ class RideResource extends Resource
                 Tables\Columns\TextColumn::make('offer.request.user.name')
                     ->label('Passenger')
                     ->searchable(),
+                    Tables\Columns\TextColumn::make('offer.request.user')
+                    ->label('User ID')
+                    ->toggleable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->offer->request->user->super_key . $record->offer->request->user->unique_id;
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('offer.request.user', function (Builder $userQuery) use ($search) {
+                            $userQuery->where(DB::raw("CONCAT(super_key, unique_id)"), 'like', "%{$search}%");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('offer.price')
                     ->label('Price'),
                     Tables\Columns\TextColumn::make('rate')
