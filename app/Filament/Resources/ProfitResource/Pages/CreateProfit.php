@@ -9,13 +9,17 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProfit extends CreateRecord
 {
     protected static string $resource = ProfitResource::class;
+    protected static bool $canCreateAnother = false;
+
     
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
-            ->createAnother(false),
+            // Actions\CreateAction::make()
+            // ->createAnother(false),
 
         ];
     }
+
+
 }
