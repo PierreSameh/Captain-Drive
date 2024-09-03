@@ -94,7 +94,7 @@ class RideResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -200,9 +200,9 @@ class RideResource extends Resource
     {
         return [
             'index' => Pages\ListRides::route('/'),
-            'create' => Pages\CreateRide::route('/create'),
+            // 'create' => Pages\CreateRide::route('/create'),
             'view' => Pages\ViewRide::route('/{record}'),
-            'edit' => Pages\EditRide::route('/{record}/edit'),
+            // 'edit' => Pages\EditRide::route('/{record}/edit'),
         ];
     }
 

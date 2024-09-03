@@ -46,7 +46,7 @@ class ReportsResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -82,9 +82,9 @@ class ReportsResource extends Resource
     {
         return [
             'index' => Pages\ListReports::route('/'),
-            'create' => Pages\CreateReports::route('/create'),
+            // 'create' => Pages\CreateReports::route('/create'),
             'view' => Pages\ViewReports::route('/{record}'),
-            'edit' => Pages\EditReports::route('/{record}/edit'),
+            // 'edit' => Pages\EditReports::route('/{record}/edit'),
         ];
     }
 }
