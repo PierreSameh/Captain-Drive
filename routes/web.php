@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Filament\Resources\DriverResource\Pages\RejectDriver;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,3 +19,5 @@ Route::get('/unauthorized', function () {
         ]
         , 401);
     });
+
+    Route::get('/admin/drivers/{record}/reject', RejectDriver::class)->name('filament.resources.drivers.reject');
