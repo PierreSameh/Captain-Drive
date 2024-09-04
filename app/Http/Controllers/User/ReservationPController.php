@@ -311,7 +311,7 @@ class ReservationPController extends Controller
     public function getReservation(Request $request){
         $userId = $request->user()->id;
         $ride = Ride::whereHas('offer.request', function($q) use ($userId) {
-            $q->where('user_id', $userId)->where('type', 'resevation');
+            $q->where('user_id', $userId)->where('type', 'reservation');
         })
         ->whereNotIn('status', ['completed', 'canceled_user'])
         ->with(['offer.request', 'offer.request.stops', 'offer.driver'])
