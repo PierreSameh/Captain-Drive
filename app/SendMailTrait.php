@@ -15,22 +15,20 @@ trait SendMailTrait
     {
 
         $mail = new PHPMailer(true);
-
         try {
             //Server settings
             $mail->SMTPDebug = SMTP::DEBUG_OFF; //Enable verbose debug output
             $mail->isSMTP(); //Send using SMTP
             $mail->Host = 'smtp.hostinger.com'; //Set the SMTP server to send through
             $mail->SMTPAuth = true; //Enable SMTP authentication
-            $mail->Username = 'pierresameh@webbing-agency.com'; //SMTP username // Your Email
-            // $mail->Password = 'olxz xjeg pssy vylu'; //SMTP password // Your App Password
-            $mail->Password = 'YKdev2004@webbing'; //SMTP password // Your App Password
+            $mail->Username = env('MAILER_EMAIL'); //SMTP username // Your Email
+            $mail->Password = env('MAILER_PASSWORD'); //SMTP password // Your App Password
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; //Enable implicit TLS encryption
             $mail->Port = 465;
             //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
-            $mail->setFrom('pierresameh@webbing-agency.com', 'Captain Drive'); // Enter Your Email
+            $mail->setFrom(env('MAILER_EMAIL'), 'Captain Drive'); // Enter Your Email
             $mail->addAddress($receiver_mail); //Add a recipient
             $mail->CharSet = 'UTF-8';
 
