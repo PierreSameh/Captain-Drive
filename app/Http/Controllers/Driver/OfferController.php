@@ -300,7 +300,8 @@ class OfferController extends Controller
         $wallet = Wallet::where('driver_id', $driverId)->first();
         $profit = Profit::first();
         if($profit){
-        $wallet->balance = $wallet->balance - ($ride->offer->price * ($profit->percentage / 100));
+        $share = $ride->offer->price * ($profit->percentage / 100);
+        $wallet->balance = $wallet->balance - $share;
         $wallet->save();
         }
         return $this->handleResponse(

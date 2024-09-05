@@ -1,30 +1,33 @@
 <?php
-
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\Video;
+use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class DeleteOldVideos extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:delete-old-videos';
+    protected $signature = 'videos:delete-old';
+    protected $description = 'Delete videos older than 72 hours';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
+    public function __construct()
+    {
+        parent::__construct();
+    }
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        //
+        $videos = Video::where('created_at', '<', Carbon::now()->subHours(72))->get();
+
+        foreach ($videos as $video) {
+            // Delete the video file from storage
+            Storage::disk('public')->delete($video->path);
+
+            // Delete the record from the database
+            $video->delete();
+        }
+
+        $this->info('Old videos deleted successfully.');
     }
 }
