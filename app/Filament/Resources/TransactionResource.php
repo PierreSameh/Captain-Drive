@@ -13,6 +13,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\DB;
+
 
 class TransactionResource extends Resource
 {
@@ -48,13 +50,19 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('driver_id')
-                    ->numeric()
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('driver.name')
                     ->sortable()
                     ->searchable(),
+                    Tables\Columns\TextColumn::make('driver')
+                    ->label('Driver ID')
+                    ->formatStateUsing(function ($record) {
+                        return $record->driver->super_key . $record->driver->unique_id;
+                    })
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('offer.driver', function (Builder $driverQuery) use ($search) {
+                            $driverQuery->where(DB::raw("CONCAT(super_key, unique_id)"), 'like', "%{$search}%");
+                        });
+                    }),
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric()
                     ->sortable(),
