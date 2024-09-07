@@ -77,6 +77,18 @@ class OfferController extends Controller
             );
         }
         $driver = $request->user();
+        $wallet = Wallet::where("driver_id", $driver->id)->first();
+        if ($wallet->balance <= -500) {
+            return $this->handleResponse(
+                false,
+                "Your balance is not enough(MIN:-500), Recharge your wallet to continue",
+                [],
+                [
+                   "balance" => $wallet->balance
+                ],
+                []
+            );
+        }
         $exists = Offer::where("driver_id", $driver->id)
         ->where("request_id", $request->ride_request_id)
         ->whereNot("status", "canceled")
