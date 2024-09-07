@@ -13,6 +13,7 @@ class Transaction extends Model
         "driver_id",
         "amount",
         "status",
+        "type",
     ];
 
 

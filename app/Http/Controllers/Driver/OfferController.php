@@ -16,6 +16,7 @@ use App\Models\Vehicle;
 use App\Models\Ride;
 use App\Models\Wallet;
 use App\Models\Profit;
+use App\Models\Transaction;
 
 
 
@@ -303,6 +304,13 @@ class OfferController extends Controller
         $share = $ride->offer->price * ($profit->percentage / 100);
         $wallet->balance = $wallet->balance - $share;
         $wallet->save();
+        $transaction = Transaction::create([
+            "driver_id" => $driverId,
+            "amount" => $share,
+            "status" => "success",
+            "type" => "share"
+        ]);
+        $ride->transaction = $transaction;
         }
         return $this->handleResponse(
             true,
