@@ -50,10 +50,15 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('Transaction ID')
+                    ->numeric()
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('driver.name')
                     ->sortable()
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('driver')
+                Tables\Columns\TextColumn::make('driver')
                     ->label('Driver ID')
                     ->formatStateUsing(function ($record) {
                         return $record->driver->super_key . $record->driver->unique_id;
@@ -66,8 +71,8 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('amount')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('status')
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('type'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
