@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use Filament\Forms\Components\Split;
+use Illuminate\Support\Facades\Session;
 
 
 class ChangePassword extends Page
@@ -68,10 +69,25 @@ protected static ?string $navigationLabel = 'Change Password';
 
         // Success message
         session()->flash('success', 'Password successfully changed!');
+
     }
 
     public function submit(): void
     {
         $this->save();
+
+        Auth::logout();
+
+        // Clear and invalidate the session
+        Session::flush();
+
+        // Regenerate the session ID
+        Session::regenerate();
+
+        // Set a flash message
+        Session::flash('status', 'Your password has been changed. Please log in again.');
+
+        // Redirect to the login page
+        $this->redirect('/admin/login');
     }
 }
