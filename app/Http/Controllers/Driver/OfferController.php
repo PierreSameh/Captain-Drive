@@ -311,7 +311,8 @@ class OfferController extends Controller
         $ride->status = "completed";
         $ride->save();
         $wallet = Wallet::where('driver_id', $driverId)->first();
-        $profit = Profit::first();
+        $vehicle = Vehicle::where('driver_id', $driverId)->first();
+        $profit = Profit::where("vehicle_type", $vehicle->type)->first();
         if($profit){
         $share = $ride->offer->price * ($profit->percentage / 100);
         $wallet->balance = $wallet->balance - $share;
