@@ -35,7 +35,7 @@ class OfferController extends Controller
                 + sin(radians(?)) 
                 * sin(radians(ride_requests.st_lat)))) AS distance"))
             ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
-            ->having('distance', '<', 10)
+            ->having('distance', '<', 2)
             ->orderBy('distance', 'asc')
             ->where('vehicle', $vehicle->type)
             ->where('status', "pending")
@@ -78,10 +78,10 @@ class OfferController extends Controller
         }
         $driver = $request->user();
         $wallet = Wallet::where("driver_id", $driver->id)->first();
-        if ($wallet->balance <= -500) {
+        if ($wallet->balance <= -100) {
             return $this->handleResponse(
                 false,
-                "Your balance is not enough(MIN:-500), Recharge your wallet to continue",
+                "Your balance is not enough(MIN:-100), Recharge your wallet to continue",
                 [],
                 [
                    "balance" => $wallet->balance

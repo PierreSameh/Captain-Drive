@@ -13,6 +13,7 @@ use App\Http\Controllers\User\ReservationPController;
 use App\Http\Controllers\Driver\ReservationDController;
 use App\Http\Controllers\User\ReportController;
 use App\Http\Controllers\Driver\VideoController;
+use App\Http\Controllers\User\ProfitController;
  
 
 
@@ -125,3 +126,6 @@ Route::post('/report', [ReportController::class,'add'])->middleware('auth:sanctu
 
 //Video
 Route::post('/video', [VideoController::class,'store'])->middleware('auth:sanctum,driver');
+
+//Profit
+Route::get('/get-profits', [ProfitController::class,'getAll']);
