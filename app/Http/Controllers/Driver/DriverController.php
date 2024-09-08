@@ -843,7 +843,7 @@ class DriverController extends Controller
             }
             return $this->handleResponse(
                 true,
-                "Sorry you were rejected by admin, try to register again with ",
+                "Sorry you were rejected by admin, try to register again with valid data",
                 [],
                 [],
                 []
