@@ -127,7 +127,7 @@ class AuthController extends Controller
             $code = rand(1000, 9999);
 
             $user->email_last_verfication_code = Hash::make($code);
-            $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
+            $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Africa/Cairo');
             $user->save();
 
             $msg_title = "Here's your Authentication Code";
@@ -292,7 +292,7 @@ class AuthController extends Controller
                 $code = rand(1000, 9999);
 
                 $user->email_last_verfication_code = Hash::make($code);
-                $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Europe/Istanbul');
+                $user->email_last_verfication_code_expird_at = Carbon::now()->addMinutes(10)->timezone('Africa/Cairo');
                 $user->save();
     
     

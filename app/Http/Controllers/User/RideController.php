@@ -110,6 +110,7 @@ class RideController extends Controller
             "en_lng"=> ["required","string"],
             "en_lat"=> ["required","string"],
             "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
+            "price"=>["required", "numeric"],
         ]);
     
         if ($validator->fails()){
@@ -172,7 +173,7 @@ class RideController extends Controller
     
             $totalPrice = $distance * $pricePerKilometer;
             $rideRequest->distance = $distance;
-            $rideRequest->price = $totalPrice;
+            $rideRequest->price = $request->price;
             $rideRequest->save();
             }
 
@@ -198,7 +199,15 @@ class RideController extends Controller
                 [
                     "Request" => $withStops,
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
     
@@ -222,7 +231,15 @@ class RideController extends Controller
                 [
                     "reqeust"=> $ride
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         return $this->handleResponse(
@@ -230,7 +247,15 @@ class RideController extends Controller
             "No Ride Reqeusts Found",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
             );
     }
 
@@ -244,7 +269,15 @@ class RideController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         $ride = RideRequest::findOrFail($request->ride_request_id);
@@ -256,7 +289,15 @@ class RideController extends Controller
                 "Ride Cancelled",
                 [],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         return $this->handleResponse(
@@ -264,7 +305,15 @@ class RideController extends Controller
             "Can't Find The Ride",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
     }
 
@@ -286,7 +335,15 @@ class RideController extends Controller
                 [
                     "offers" => $offers
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
                 );
             }
             return $this->handleResponse(
@@ -294,7 +351,15 @@ class RideController extends Controller
                 "No Offers",
                 [],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         return $this->handleResponse(
@@ -302,7 +367,15 @@ class RideController extends Controller
             "Request Not Available",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
             );
     }
 
@@ -316,7 +389,15 @@ class RideController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         $offer = Offer::with('request')->where('id', $request->offer_id)->with('driver')->first();
@@ -327,7 +408,15 @@ class RideController extends Controller
                     "Driver Canceled The Offer",
                     [],
                     [],
-                    []
+                    [
+                        "Vehicle Types" => [
+                            '1 -> Car',
+                            '2 -> conditioned car',
+                            '3 -> Motorcycle',
+                            '4 -> Taxi',
+                            '5 -> Bus'
+                            ]
+                    ]
                 );
             }
             return $this->handleResponse(
@@ -337,7 +426,15 @@ class RideController extends Controller
                 [
                     'offer' => $offer
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
                 );
             }
             return $this->handleResponse(
@@ -345,7 +442,15 @@ class RideController extends Controller
                 'Offer Has Been Canceled',
                 [],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
     }
 
@@ -359,7 +464,15 @@ class RideController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         $user = $request->user();
@@ -384,7 +497,15 @@ class RideController extends Controller
                     "offer" => $offer,
                     "ride_request" => $rideRequest
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
                 );
             }
             return $this->handleResponse(
@@ -392,7 +513,15 @@ class RideController extends Controller
                 "Offer Not Found",
                 [],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
 
     }
@@ -406,7 +535,15 @@ class RideController extends Controller
                 "",
                 [$validator->errors()->first()],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         $user = $request->user();
@@ -422,7 +559,15 @@ class RideController extends Controller
                 [
                     "offer" => $offer,
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
                 );
             }
             return $this->handleResponse(
@@ -430,7 +575,15 @@ class RideController extends Controller
                 "Offer Not Found",
                 [],
                 [],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
 
     }
@@ -450,7 +603,15 @@ class RideController extends Controller
                     "Driver Canceled The Ride",
                     [],
                     [],
-                    []
+                    [
+                        "Vehicle Types" => [
+                            '1 -> Car',
+                            '2 -> conditioned car',
+                            '3 -> Motorcycle',
+                            '4 -> Taxi',
+                            '5 -> Bus'
+                            ]
+                    ]
                 );
             }
             return $this->handleResponse(
@@ -460,7 +621,15 @@ class RideController extends Controller
                 [
                     "ride" => $ride
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         return $this->handleResponse(
@@ -468,7 +637,15 @@ class RideController extends Controller
             "No Active Rides",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
         
         
@@ -492,7 +669,15 @@ class RideController extends Controller
             [
                 "ride" => $ride
             ],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
         }
         return $this->handleResponse(
@@ -500,7 +685,15 @@ class RideController extends Controller
             "Ride Not Found",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
     }
     public function setToDestination(Request $request){
@@ -522,7 +715,15 @@ class RideController extends Controller
             [
                 "ride" => $ride
             ],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
         }
         return $this->handleResponse(
@@ -530,7 +731,15 @@ class RideController extends Controller
             "Driver Has Not Arrived Yet",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
     }
 
@@ -632,7 +841,15 @@ class RideController extends Controller
                 [
                     $activities
                 ],
-                []
+                [
+                    "Vehicle Types" => [
+                        '1 -> Car',
+                        '2 -> conditioned car',
+                        '3 -> Motorcycle',
+                        '4 -> Taxi',
+                        '5 -> Bus'
+                        ]
+                ]
             );
         }
         return $this->handleResponse(
@@ -640,7 +857,15 @@ class RideController extends Controller
             "You Have No Activities Yet",
             [],
             [],
-            []
+            [
+                "Vehicle Types" => [
+                    '1 -> Car',
+                    '2 -> conditioned car',
+                    '3 -> Motorcycle',
+                    '4 -> Taxi',
+                    '5 -> Bus'
+                    ]
+            ]
         );
     }
 
