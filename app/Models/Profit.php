@@ -10,6 +10,7 @@ class Profit extends Model
     use HasFactory;
 
     protected $fillable = [
+        "vehicle_type",
         "per_kilo",
         "percentage",
     ];

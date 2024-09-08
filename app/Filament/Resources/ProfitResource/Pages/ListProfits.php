@@ -14,7 +14,7 @@ class ListProfits extends ListRecords
     {
         return [
             Actions\CreateAction::make()
-            ->visible(fn () => Profit::count() === 0)
+            ->visible(fn () => Profit::count() < 5)
             ->createAnother(false),
 
         ];

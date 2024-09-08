@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\Select;
+use Illuminate\Validation\Rule;
+
 
 class ProfitResource extends Resource
 {
@@ -25,6 +28,16 @@ class ProfitResource extends Resource
     {
         return $form
             ->schema([
+                Select::make('vehicle_type')
+                ->required()
+                ->options([
+                    '1' => 'Car',
+                    '2' => 'Condetioned Car',
+                    '3' => 'Motorcycle',
+                    '4' => 'Taxi',
+                    '5' => 'Bus',
+                ])
+                ->unique(column: 'vehicle_type'),
                 Forms\Components\TextInput::make('per_kilo')
                     ->required()
                     ->label("Cost Per Kilometre")
@@ -33,6 +46,7 @@ class ProfitResource extends Resource
                     ->required()
                     ->label("Company's Share(%)")
                     ->numeric(),
+
             ]);
     }
 
@@ -40,6 +54,19 @@ class ProfitResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make("vehicle_type")
+                ->label('Vehicle Type')
+                ->formatStateUsing(function ($state) {
+                    $vehicleTypes = [
+                        '1' => 'Car',
+                        '2' => 'Conditioned Car',
+                        '3' => 'Motorcycle',
+                        '4' => 'Taxi',
+                        '5' => 'Bus',
+                    ];
+            
+                    return $vehicleTypes[$state] ?? 'Unknown'; // Return the mapped value or 'Unknown' if not found
+                }),
                 Tables\Columns\TextColumn::make('per_kilo')
                     ->numeric()
                     ->sortable(),
