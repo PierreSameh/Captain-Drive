@@ -827,6 +827,36 @@ class DriverController extends Controller
                 );
     }
 
+
+    public function getMessage(Request $request){
+        $driver = $request->user();
+        if ($driver->is_approved == 2) {
+            $message = RejectMessage::where("driver_id", $driver->id)->first();
+            if ($message) {
+                return $this->handleResponse(
+                    true,
+                    "",
+                    [$message->reasons],
+                    [],
+                    []
+                );
+            }
+            return $this->handleResponse(
+                true,
+                "Sorry you were rejected by admin, try to register again with ",
+                [],
+                [],
+                []
+            );
+        }
+        return $this->handleResponse(
+            false,
+            "",
+            [],
+            [],
+            []
+        );
+    }
     public function deleteDriverAfterReject(Request $request) {
         $driver = $request->user();
         $driverdata = Driver::where("id", $driver->id)->first();

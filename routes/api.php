@@ -57,6 +57,7 @@ Route::get('/driver', [DriverController::class,'getUserDriver'])->middleware('au
 Route::post('/driver/edit', [DriverController::class,"editProfileDriver"])->middleware('auth:sanctum,driver');
 Route::post('/driver/login', [DriverController::class, 'loginDriver']);
 Route::post('/driver/logout', [DriverController::class, "logoutDriver"])->middleware('auth:sanctum,driver');
+Route::get('/driver/message', [DriverController::class,'getMessage'])->middleware('auth:sanctum,driver');
 Route::post('/driver/rejected', [DriverController::class, "deleteDriverAfterReject"])->middleware('auth:sanctum,driver');
 Route::post('/driver/set-status', [DriverController::class,'setDriverStatus'])->middleware('auth:sanctum');
 Route::post('/driver/set-location', [DriverController::class,'setDriverLocation'])->middleware('auth:sanctum');
