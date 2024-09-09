@@ -30,7 +30,7 @@ class ReservationDController extends Controller
                 + sin(radians(?)) 
                 * sin(radians(ride_requests.st_lat)))) AS distance"))
             ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
-            ->having('distance', '<', 10)
+            ->having('distance', '<', 2)
             ->orderBy('distance', 'asc')
             ->where('vehicle', $vehicle->type)
             ->where('status', "pending")

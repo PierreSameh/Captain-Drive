@@ -30,6 +30,8 @@ class ReservationPController extends Controller
             "en_lat"=> ["required","string"],
             "stop_locations.*"=> ["nullable","array:stop_location,lng,lat"],
             "time"=> "required|date_format:Y-m-d H:i:s",
+            "price"=>["required", "numeric"],
+
         ]);
         
         if ($validator->fails()){
@@ -83,7 +85,8 @@ class ReservationPController extends Controller
                 "en_lng"=> $en_lng,
                 "en_lat"=> $en_lat,
                 "type"=> "reservation",
-                "time"=> $request->time
+                "time"=> $request->time,
+                "price"=> $request->price,
             ]);
             $stopLocations = [];
         if ($request->has("stop_locations")) {
