@@ -83,7 +83,12 @@ class ApprovedDriverResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\Action::make('Active')
+                ->action(fn (Driver $record) => $record->update(['is_approved' => 1]))
+                ->hidden(fn (Driver $record) => $record->is_approved === 1)
+                ->requiresConfirmation()
+                ->color('success'),
                 Tables\Actions\Action::make('hold')
                 ->action(function (Driver $record, array $data) {
                     $record->update(['is_approved' => 3]);
@@ -102,6 +107,7 @@ class ApprovedDriverResource extends Resource
                         ->label('Holding Reason'),
                 ])
                 ->requiresConfirmation()
+                ->hidden(fn (Driver $record) => $record->is_approved === 3)
                 ->color('#8B8000'),
                 Tables\Actions\Action::make('block')
                 ->action(function (Driver $record, array $data) {
@@ -121,6 +127,7 @@ class ApprovedDriverResource extends Resource
                         ->label('Blocking Reason'),
                 ])
                 ->requiresConfirmation()
+                ->hidden(fn (Driver $record) => $record->is_approved === 4)
                 ->color('danger'),
             ])
             ->bulkActions([
