@@ -28,6 +28,9 @@ use Filament\Support\Facades\FilamentIcon;
 use Filament\Infolists\Components\Grid;
 use Illuminate\Support\Facades\Storage;
 use App\Filament\Resources\DriverResource\Pages\RejectDriver;
+use Illuminate\Support\Facades\DB;
+use Filament\Tables\Columns\IconColumn;
+
 
 class ApprovedDriverResource extends Resource
 {
@@ -55,18 +58,75 @@ class ApprovedDriverResource extends Resource
                 Tables\Columns\TextColumn::make('name'),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('phone'),
+                Tables\Columns\TextColumn::make('unique_id')
+                    ->label('Driver ID')
+                    ->toggleable()
+                    ->formatStateUsing(function ($record) {
+                        return $record->super_key . $record->unique_id;
+                    })
+                    ->searchable(query: function (Builder $query, string $search) {
+                        $query->where(DB::raw("CONCAT(super_key, unique_id)"), 'like', "%{$search}%");
+
+                    }),
+                IconColumn::make('is_approved')
+                    ->icon(fn (string $state): string => match ($state) {
+                    '1' => 'heroicon-o-check-circle',
+                    '3' => 'heroicon-o-pause',
+                    '4' => 'heroicon-o-no-symbol',
+                    }),
+                Tables\Columns\TextColumn::make("created_at")
+                    ->label('Joined Date')
+                    ->dateTime()
+                    ->toggleable(),
             ])
             ->filters([
                 //
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('hold')
+                ->action(function (Driver $record, array $data) {
+                    $record->update(['is_approved' => 3]);
+                    RejectMessage::create([
+                        'driver_id' => $record->id,
+                        'reasons' => $data['reject_reason'],
+                    ]);
+                    Notification::make()
+                        ->success()
+                        ->title('Driver Holded successfully')
+                        ->send();
+                })
+                ->form([
+                    \Filament\Forms\Components\Textarea::make('reject_reason')
+                        ->required()
+                        ->label('Holding Reason'),
+                ])
+                ->requiresConfirmation()
+                ->color('#8B8000'),
+                Tables\Actions\Action::make('block')
+                ->action(function (Driver $record, array $data) {
+                    $record->update(['is_approved' => 4]);
+                    RejectMessage::create([
+                        'driver_id' => $record->id,
+                        'reasons' => $data['reject_reason'],
+                    ]);
+                    Notification::make()
+                        ->success()
+                        ->title('Driver Blocked successfully')
+                        ->send();
+                })
+                ->form([
+                    \Filament\Forms\Components\Textarea::make('reject_reason')
+                        ->required()
+                        ->label('Blocking Reason'),
+                ])
+                ->requiresConfirmation()
+                ->color('danger'),
             ])
             ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Tables\Actions\BulkActionGroup::make([
+                //     Tables\Actions\DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 
@@ -321,14 +381,14 @@ class ApprovedDriverResource extends Resource
     {
         return [
             'index' => Pages\ListApprovedDrivers::route('/'),
-            'create' => Pages\CreateApprovedDriver::route('/create'),
+            // 'create' => Pages\CreateApprovedDriver::route('/create'),
             'view' => Pages\ViewApprovedDriver::route('/{record}'),
-            'edit' => Pages\EditApprovedDriver::route('/{record}/edit'),
+            // 'edit' => Pages\EditApprovedDriver::route('/{record}/edit'),
         ];
     }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('is_approved', 1);
+        return parent::getEloquentQuery()->whereNotIn('is_approved', [0,2]);
     }
 }

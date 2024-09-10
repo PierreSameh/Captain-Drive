@@ -831,22 +831,114 @@ class DriverController extends Controller
     public function getMessage(Request $request){
         $driver = $request->user();
         if ($driver->is_approved == 2) {
-            $message = RejectMessage::where("driver_id", $driver->id)->first();
+            $message = RejectMessage::where("driver_id", $driver->id)->latest()->first();
             if ($message) {
                 return $this->handleResponse(
                     true,
-                    "",
-                    [$message->reasons],
+                    "Sorry You Were Rejected",
                     [],
-                    []
+                    [
+                        "message" => $message,
+                        "status" => $driver->is_approved
+                    ],
+                    [
+                        "status-notes" => [
+                            "2" => "rejected",
+                            "3" => "hold",
+                            "4" => "block",
+                        ],
+                        "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                    ]
                 );
             }
             return $this->handleResponse(
                 true,
                 "Sorry you were rejected by admin, try to register again with valid data",
                 [],
+                [
+                    "status" => $driver->is_approved
+                ],
+                [
+                    "status-notes" => [
+                        "2" => "rejected",
+                        "3" => "hold",
+                        "4" => "block",
+                    ],
+                    "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                ]
+            );
+        } elseif ($driver->is_approved == 3) {
+            $message = RejectMessage::where("driver_id", $driver->id)->latest()->first();
+            if ($message) {
+                return $this->handleResponse(
+                    true,
+                    "Sorry You Were Holded",
+                    [],
+                    [
+                        "message" => $message->reasons,
+                        "status" => $driver->is_approved
+
+                    ],
+                    [
+                        "status-notes" => [
+                            "2" => "rejected",
+                            "3" => "hold",
+                            "4" => "block",
+                        ],
+                        "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                    ]
+                );
+            }
+            return $this->handleResponse(
+                true,
+                "Sorry you were Holded by admin",
                 [],
-                []
+                [],
+                [
+                    "status-notes" => [
+                        "2" => "rejected",
+                        "3" => "hold",
+                        "4" => "block",
+                    ],
+                    "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                ]
+            );
+        } elseif ($driver->is_approved == 4) {
+            $message = RejectMessage::where("driver_id", $driver->id)->latest()->first();
+            if ($message) {
+                return $this->handleResponse(
+                    true,
+                    "Sorry You Were blocked",
+                    [],
+                    [
+                       "message" => $message->reasons,
+                       "status"=> $driver->is_approved
+                    ],
+                    [
+                        "status-notes" => [
+                            "2" => "rejected",
+                            "3" => "hold",
+                            "4" => "block",
+                        ],
+                        "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                    ]
+                );
+            }
+            return $this->handleResponse(
+                true,
+                "Sorry you were Blocked by admin",
+                [],
+                [
+                    "status" => $driver->is_approved
+                ],
+                [
+                    "status-notes" => [
+                        "2" => "rejected",
+                        "3" => "hold",
+                        "4" => "block",
+                    ],
+                    "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+                ]
             );
         }
         return $this->handleResponse(
@@ -854,7 +946,14 @@ class DriverController extends Controller
             "",
             [],
             [],
-            []
+            [
+                "status-notes" => [
+                    "2" => "rejected",
+                    "3" => "hold",
+                    "4" => "block",
+                ],
+                "Use delete driver when message status == 2 only, otherwise show the message and close the application"
+            ]
         );
     }
     public function deleteDriverAfterReject(Request $request) {

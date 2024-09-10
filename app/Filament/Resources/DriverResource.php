@@ -28,6 +28,7 @@ use Filament\Support\Facades\FilamentIcon;
 use Filament\Infolists\Components\Grid;
 use Illuminate\Support\Facades\Storage;
 use App\Filament\Resources\DriverResource\Pages\RejectDriver;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -57,7 +58,20 @@ class DriverResource extends Resource
             Tables\Columns\TextColumn::make('name'),
             Tables\Columns\TextColumn::make('email'),
             Tables\Columns\TextColumn::make('phone'),
-            // Add other columns as needed
+            Tables\Columns\TextColumn::make('unique_id')
+            ->label('Driver ID')
+            ->toggleable()
+            ->formatStateUsing(function ($record) {
+                return $record->super_key . $record->unique_id;
+            })
+            ->searchable(query: function (Builder $query, string $search) {
+                $query->where(DB::raw("CONCAT(super_key, unique_id)"), 'like', "%{$search}%");
+
+            }),
+            Tables\Columns\TextColumn::make("created_at")
+            ->label('Joined Date')
+            ->dateTime()
+            ->toggleable(),
         ])
         ->filters([
             //
