@@ -190,7 +190,7 @@ class ReservationPController extends Controller
         if (isset($rideRequest)) {
             $offers = Offer::where('request_id', $rideRequest->id)
             ->whereNotIn('status', ['canceled', 'rejected'])
-            ->with('driver')
+            ->with('driver.vehicle')
             ->get();
             if(count($offers) > 0) {
             return $this->handleResponse(

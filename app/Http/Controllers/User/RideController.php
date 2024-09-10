@@ -400,7 +400,7 @@ class RideController extends Controller
                 ]
             );
         }
-        $offer = Offer::with('request')->where('id', $request->offer_id)->with('driver')->first();
+        $offer = Offer::with('request', 'driver.vehicle')->where('id', $request->offer_id)->with('driver')->first();
         if (isset($offer)) {
             if($offer->status == "canceled"){
                 return $this->handleResponse(
