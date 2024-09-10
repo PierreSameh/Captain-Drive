@@ -320,8 +320,8 @@ class RideController extends Controller
     public function getAllOffersUser(Request $request) {
         $user = $request->user();
         $rideRequest = RideRequest::where("user_id", $user->id)
-        ->where("status", "pending")
-        ->first();
+        ->where("status", "pending")->
+        latest()->first();
         if (isset($rideRequest)) {
             $offers = Offer::where('request_id', $rideRequest->id)
             ->whereNotIn('status', ['canceled', 'rejected'])
