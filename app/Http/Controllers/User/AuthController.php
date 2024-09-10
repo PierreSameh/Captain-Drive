@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use App\Models\AdminNumber;
 
 class AuthController extends Controller
 {
@@ -590,6 +591,33 @@ class AuthController extends Controller
             );
         }
         
+    }
+
+    public function adminNumbers(){
+        $numbers = AdminNumber::all();
+        if (count($numbers) > 0){
+            return $this->handleResponse(
+                true,
+                "",
+                [],
+                [
+                    "numbers" => $numbers
+                ],
+                [
+                    "type-notes" => [
+                        "1"=> "whatsapp",
+                    ],
+                    "later we Can other types"
+                ]
+            );
+        }
+        return $this->handleResponse(
+            true,
+            "No Numbers Yet",
+            [],
+            [],
+            []
+        );
     }
 
 

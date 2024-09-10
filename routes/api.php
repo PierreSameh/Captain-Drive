@@ -129,3 +129,5 @@ Route::post('/video', [VideoController::class,'store'])->middleware('auth:sanctu
 
 //Profit
 Route::get('/get-profits', [ProfitController::class,'getAll']);
+
+Route::get('/admin-numbers', [AuthController::class,'adminNumbers']);
