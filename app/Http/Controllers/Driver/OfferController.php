@@ -28,39 +28,39 @@ class OfferController extends Controller
         $driver = $request->user();
         $radius = 6371; // Earth's radius in kilometers
         $vehicle = Vehicle::where('driver_id', $driver->id)->first();
-        $requests = RideRequest::select('ride_requests.*', DB::raw("
-                ($radius * acos(cos(radians(?)) 
-                * cos(radians(ride_requests.st_lat)) 
-                * cos(radians(ride_requests.st_lng) - radians(?)) 
-                + sin(radians(?)) 
-                * sin(radians(ride_requests.st_lat)))) AS distance"))
-            ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
-            ->having('distance', '<', 2)
-            ->orderBy('distance', 'asc')
-            ->where('vehicle', $vehicle->type)
-            ->where('status', "pending")
-            ->where('type', 'ride')
-            ->with('stops') // Eager load the 'stops' relationship
-            ->get();
-        // $requests = RideRequest::selectRaw("
-        // ride_requests.*,
-        // ($radius * acos(
-        //     cos(radians(?)) * cos(radians(st_lat)) * cos(radians(st_lng) - radians(?))
-        //     + sin(radians(?)) * sin(radians(st_lat))
-        // )) AS distance
-        // ", [$driver->lat, $driver->lng, $driver->lat])
-        // ->where('vehicle', $vehicle->type)
-        // ->where('status', 'pending')
-        // ->where('type', 'ride')
-        // ->whereRaw("
-        //     ($radius * acos(
-        //         cos(radians(?)) * cos(radians(st_lat)) * cos(radians(st_lng) - radians(?))
-        //         + sin(radians(?)) * sin(radians(st_lat))
-        //     )) < ?
-        // ", [$driver->lat, $driver->lng, $driver->lat, 2])
-        // ->orderBy('distance', 'asc')
-        // ->with('stops') // Eager load the 'stops' relationship
-        // ->get();
+        // $requests = RideRequest::select('ride_requests.*', DB::raw("
+        //         ($radius * acos(cos(radians(?)) 
+        //         * cos(radians(ride_requests.st_lat)) 
+        //         * cos(radians(ride_requests.st_lng) - radians(?)) 
+        //         + sin(radians(?)) 
+        //         * sin(radians(ride_requests.st_lat)))) AS distance"))
+        //     ->addBinding([$driver->lat, $driver->lng, $driver->lat], 'select')
+        //     ->having('distance', '<', 2)
+        //     ->orderBy('distance', 'asc')
+        //     ->where('vehicle', $vehicle->type)
+        //     ->where('status', "pending")
+        //     ->where('type', 'ride')
+        //     ->with('stops') // Eager load the 'stops' relationship
+        //     ->get();
+        $requests = RideRequest::selectRaw("
+        ride_requests.*,
+        ($radius * acos(
+            cos(radians(?)) * cos(radians(st_lat)) * cos(radians(st_lng) - radians(?))
+            + sin(radians(?)) * sin(radians(st_lat))
+        )) AS distance
+        ", [$driver->lat, $driver->lng, $driver->lat])
+        ->where('vehicle', $vehicle->type)
+        ->where('status', 'pending')
+        ->where('type', 'ride')
+        ->whereRaw("
+            ($radius * acos(
+                cos(radians(?)) * cos(radians(st_lat)) * cos(radians(st_lng) - radians(?))
+                + sin(radians(?)) * sin(radians(st_lat))
+            )) < ?
+        ", [$driver->lat, $driver->lng, $driver->lat, 2])
+        ->orderBy('distance', 'asc')
+        ->with('stops') // Eager load the 'stops' relationship
+        ->get();
         if (count( $requests ) > 0) {
         return $this->handleResponse(
             true,
