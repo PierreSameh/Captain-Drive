@@ -226,7 +226,7 @@ class OfferController extends Controller
             $q->where('driver_id', $driverId);
         })
         ->whereNotIn('status', ['completed', 'canceled_driver'])
-        ->with(['offer.request', 'offer.request.stops'])
+        ->with(['offer.request', 'offer.request.stops', 'offer.request.user'])
         ->latest()->first();
         if($ride){
             if($ride->status == 'canceled_user'){
