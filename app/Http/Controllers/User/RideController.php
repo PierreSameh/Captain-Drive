@@ -704,6 +704,7 @@ class RideController extends Controller
         ->whereNotIn('status', ['completed', 'canceled_driver', 'canceled_user'])
         ->where('status', 'arrived')
         ->with(['offer.request', 'offer.driver'])
+        ->latest()
         ->first();
         if($ride){
         $ride->status = "to_destination";

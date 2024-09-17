@@ -325,6 +325,7 @@ class OfferController extends Controller
         })
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
         ->with(['offer.request','offer.request.stops'])
+        ->latest()
         ->first();
         if($ride){
         $ride->status = "completed";
