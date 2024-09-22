@@ -56,7 +56,7 @@ class ReservationPController extends Controller
         $setRide = Ride::whereHas('offer.request', function($q) use($user){
             $q->where('user_id', $user->id)->where('type', 'reservation');
         })
-        ->whereNotIn("status", values: ['completed', 'canceled_user', 'canceled_driver'])
+        ->whereNotIn("status", values: ['canceled_user', 'canceled_driver'])
         ->latest()->first();
         $setRequest = RideRequest::where('user_id', $user->id)->where('type','reservation')
         ->latest()->first();
