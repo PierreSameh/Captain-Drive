@@ -225,7 +225,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_driver', 'waiting'])
         ->with(['offer.request', 'offer.request.stops', 'offer.request.user'])
         ->latest()->first();
         if($ride){
@@ -264,7 +264,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver', 'waiting'])
         ->with(['offer.request', 'offer.request.stops'])
         ->first();
         if($ride){
@@ -294,7 +294,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver', 'waiting'])
         ->with(['offer.request', 'offer.request.stops'])->latest()
         ->first();
         if($ride){
@@ -323,7 +323,7 @@ class OfferController extends Controller
         $ride = Ride::whereHas('offer', function($q) use ($driverId) {
             $q->where('driver_id', $driverId);
         })
-        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
+        ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver', 'waiting'])
         ->with(['offer.request','offer.request.stops'])
         ->latest()
         ->first();
