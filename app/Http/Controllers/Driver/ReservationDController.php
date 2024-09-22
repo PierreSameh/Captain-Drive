@@ -228,6 +228,7 @@ class ReservationDController extends Controller
         $ride = Ride::where('id', $request->reservation_id)
         ->whereNotIn('status', ['completed', 'canceled_user', 'canceled_driver'])
         ->with(['offer.request', 'offer.request.stops'])
+        ->latest()
         ->first();
         if($ride){
         $ride->status = "canceled_driver";
