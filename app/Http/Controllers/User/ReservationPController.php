@@ -59,6 +59,7 @@ class ReservationPController extends Controller
         ->latest()->first();
         $setRequest = RideRequest::where('user_id', $user->id)->where('type','reservation')
         ->latest()->first();
+        if($setRide || $setRequest){
         if ( $setRide->status == 'completed' || $setRequest->status == 'pending') {
             return $this->handleResponse(
                 false,
@@ -68,6 +69,7 @@ class ReservationPController extends Controller
                 []
                 );
         }
+      }
         $st_lng = $request->st_lng;
         $st_lat = $request->st_lat;
         $en_lng = $request->en_lng;
