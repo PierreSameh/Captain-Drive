@@ -59,8 +59,8 @@ class ReservationPController extends Controller
         ->latest()->first();
         $setRequest = RideRequest::where('user_id', $user->id)->where('type','reservation')
         ->latest()->first();
-        $isset1 = $setRide ? $setRide->status == 'completed' : true;
-        $isset2 = $setRequest ? $setRequest->status == 'pending' : false;
+        $isset1 = $setRide->status == 'completed' ? true : false;
+        $isset2 = $setRequest->status == 'pending' ? false : true;
         if (!$isset1 || $isset2) {
             return $this->handleResponse(
                 false,
