@@ -66,7 +66,9 @@ class ReservationPController extends Controller
                 false,
                 "You Can't Reserve Many Rides",
                 [],
-                [],
+                [
+                    $isset1, $isset2
+                ],
                 []
                 );
         }
