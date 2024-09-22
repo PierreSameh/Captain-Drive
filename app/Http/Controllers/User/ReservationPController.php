@@ -126,7 +126,7 @@ class ReservationPController extends Controller
         $user = $request->user();
         $ride = RideRequest::where("user_id", $user->id)
         ->where('type', 'reservation')
-        ->whereNot('status', 'canceled')
+        ->whereNotIn('status', ['canceled', 'closed'] )
         ->with('stops')->latest()->first();
         if ($ride){
             return $this->handleResponse(
