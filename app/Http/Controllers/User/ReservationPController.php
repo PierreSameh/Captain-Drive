@@ -52,6 +52,21 @@ class ReservationPController extends Controller
                 ]
             );
         }
+        // Haversine formula to calculate distance in kilometers
+        $earthRadius = 6371; // Earth's radius in kilometers
+    
+        $dLat = deg2rad($request->en_lat - $request->st_lat);
+        $dLng = deg2rad($request->en_lng - $request->st_lng);
+
+        $a = sin($dLat / 2) * sin($dLat / 2) +
+             cos(deg2rad($request->st_lat)) * cos(deg2rad($request->en_lat)) *
+             sin($dLng / 2) * sin($dLng / 2);
+
+        $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+
+        $distance = $earthRadius * $c; // Distance in kilometers
+
+        // Assume the price per kilometer is stored in a variable or a config
         $user = $request->user();
         $setRide = Ride::whereHas('offer.request', function($q) use($user){
             $q->where('user_id', $user->id)->where('type', 'reservation');
@@ -88,6 +103,7 @@ class ReservationPController extends Controller
                 "type"=> "reservation",
                 "time"=> $request->time,
                 "price"=> $request->price,
+                "distance"=> $distance
             ]);
             $stopLocations = [];
         if ($request->has("stop_locations")) {
