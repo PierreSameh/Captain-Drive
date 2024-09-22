@@ -56,11 +56,12 @@ class ReservationPController extends Controller
         $setRide = Ride::whereHas('offer.request', function($q) use($user){
             $q->where('user_id', $user->id)->where('type', 'reservation');
         })
+        ->whereNotIn("status", values: ['completed', 'canceled_user', 'canceled_driver'])
         ->latest()->first();
         $setRequest = RideRequest::where('user_id', $user->id)->where('type','reservation')
         ->latest()->first();
         if($setRide || $setRequest){
-        if ( $setRide->status == 'completed' || $setRequest->status == 'pending') {
+        if ( $setRide->status !== 'completed' || $setRequest->status == 'pending') {
             return $this->handleResponse(
                 false,
                 "You Can't Reserve Many Rides",
