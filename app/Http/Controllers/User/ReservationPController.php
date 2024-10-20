@@ -75,17 +75,33 @@ class ReservationPController extends Controller
         ->latest()->first();
         $setRequest = RideRequest::where('user_id', $user->id)->where('type','reservation')
         ->latest()->first();
-        if($setRide || $setRequest){
-        if ( $setRide->status !== 'completed' || $setRequest->status == 'pending') {
-            return $this->handleResponse(
-                false,
-                "You Can't Reserve Many Rides",
-                [],
-                [],
-                []
-                );
-        }
-      }
+    //     if($setRide || $setRequest){
+    //     if ( $setRide->status !== 'completed' || $setRequest->status == 'pending') {
+    //         return $this->handleResponse(
+    //             false,
+    //             "You Can't Reserve Many Rides",
+    //             [],
+    //             [],
+    //             []
+    //             );
+    //     }
+    //   }
+
+    // Check if either ride or request exists and apply the status conditions safely
+if ($setRide || $setRequest) {
+    $rideNotCompleted = $setRide && $setRide->status !== 'completed';
+    $requestPending = $setRequest && $setRequest->status == 'pending';
+
+    if ($rideNotCompleted || $requestPending) {
+        return $this->handleResponse(
+            false,
+            "You Can't Reserve Many Rides",
+            [],
+            [],
+            []
+        );
+    }
+}
         $st_lng = $request->st_lng;
         $st_lat = $request->st_lat;
         $en_lng = $request->en_lng;
